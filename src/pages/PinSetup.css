@@ -1,0 +1,270 @@
+.pin-setup {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pin-setup-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pin-setup-header h1 {
+  margin: 0 0 0 20px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.pin-setup-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.setup-step {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.step-icon {
+  font-size: 60px;
+  color: #ffd700;
+  margin-bottom: 30px;
+}
+
+.setup-step h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.setup-step p {
+  font-size: 16px;
+  color: #cccccc;
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+.pin-input-container {
+  margin-bottom: 40px;
+}
+
+.pin-input {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: 8px;
+}
+
+.pin-input:focus {
+  outline: none;
+  border-color: #ffd700;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.pin-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.pin-dot.filled {
+  background: #ffd700;
+  border-color: #ffd700;
+  transform: scale(1.1);
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 120px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a1a;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.biometric-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.biometric-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  padding: 18px 30px;
+}
+
+.biometric-btn svg {
+  font-size: 20px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .pin-setup-header {
+    padding: 15px;
+  }
+  
+  .pin-setup-header h1 {
+    font-size: 20px;
+  }
+  
+  .pin-setup-content {
+    padding: 15px;
+  }
+  
+  .setup-step {
+    max-width: 350px;
+  }
+  
+  .step-icon {
+    font-size: 50px;
+    margin-bottom: 25px;
+  }
+  
+  .setup-step h2 {
+    font-size: 24px;
+  }
+  
+  .pin-input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .btn {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .pin-setup-header {
+    padding: 10px;
+  }
+  
+  .pin-setup-content {
+    padding: 10px;
+  }
+  
+  .setup-step {
+    max-width: 300px;
+  }
+  
+  .step-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .setup-step h2 {
+    font-size: 20px;
+  }
+  
+  .setup-step p {
+    font-size: 14px;
+  }
+  
+  .pin-input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .pin-dots {
+    gap: 10px;
+  }
+  
+  .pin-dot {
+    width: 16px;
+    height: 16px;
+  }
+}

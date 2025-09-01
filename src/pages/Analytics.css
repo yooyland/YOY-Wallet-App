@@ -1,0 +1,232 @@
+.analytics {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.analytics-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.analytics-header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 28px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.analytics-header p {
+  color: #cccccc;
+  font-size: 16px;
+}
+
+/* 시간 범위 선택 */
+.time-range-selector {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.time-btn {
+  padding: 8px 16px;
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-btn:hover {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.time-btn.active {
+  background: #ffd700;
+  color: #000000;
+  border-color: #ffd700;
+}
+
+/* 분석 카드 */
+.analytics-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.analytics-card {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card-header h3 {
+  color: #ffffff;
+  font-size: 14px;
+  margin: 0;
+}
+
+.card-header svg {
+  color: #ffd700;
+}
+
+.card-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.change.positive {
+  color: #4caf50;
+}
+
+.change.negative {
+  color: #f44336;
+}
+
+/* 차트 영역 */
+.chart-section {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chart-header h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+  color: #cccccc;
+}
+
+.chart-placeholder svg {
+  font-size: 48px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.chart-placeholder p {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.chart-placeholder small {
+  font-size: 12px;
+  color: #888;
+}
+
+/* 자산 배분 */
+.allocation-section {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.allocation-section h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.allocation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.allocation-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coin-name {
+  flex: 1;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.percentage {
+  color: #ffd700;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: right;
+}
+
+.allocation-bar {
+  flex: 2;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .analytics {
+    padding: 10px;
+  }
+
+  .analytics-cards {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .allocation-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .percentage {
+    text-align: left;
+    margin-bottom: 5px;
+  }
+}

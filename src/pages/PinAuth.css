@@ -1,0 +1,309 @@
+.pin-auth {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pin-auth-header {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.pin-auth-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.pin-auth-header p {
+  font-size: 16px;
+  color: #cccccc;
+  margin: 0;
+}
+
+.pin-auth-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-step {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.step-icon {
+  font-size: 60px;
+  color: #ffd700;
+  margin-bottom: 30px;
+}
+
+.auth-step h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.auth-step p {
+  font-size: 16px;
+  color: #cccccc;
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+.pin-input-container {
+  margin-bottom: 40px;
+}
+
+.pin-input {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: 8px;
+}
+
+.pin-input:focus {
+  outline: none;
+  border-color: #ffd700;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pin-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.pin-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.pin-dot.filled {
+  background: #ffd700;
+  border-color: #ffd700;
+  transform: scale(1.1);
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 120px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a1a;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-options {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.biometric-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  padding: 15px 25px;
+}
+
+.biometric-btn svg {
+  font-size: 18px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.attempts-info {
+  margin-top: 30px;
+  text-align: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.attempts-info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.attempts-info .warning {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .pin-auth-header {
+    padding: 30px 15px 15px;
+  }
+  
+  .pin-auth-header h1 {
+    font-size: 24px;
+  }
+  
+  .pin-auth-header p {
+    font-size: 14px;
+  }
+  
+  .pin-auth-content {
+    padding: 15px;
+  }
+  
+  .auth-step {
+    max-width: 350px;
+  }
+  
+  .step-icon {
+    font-size: 50px;
+    margin-bottom: 25px;
+  }
+  
+  .auth-step h2 {
+    font-size: 24px;
+  }
+  
+  .auth-step p {
+    font-size: 14px;
+  }
+  
+  .pin-input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .btn {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+  
+  .pin-dots {
+    gap: 10px;
+  }
+  
+  .pin-dot {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pin-auth-header {
+    padding: 20px 10px 10px;
+  }
+  
+  .pin-auth-header h1 {
+    font-size: 20px;
+  }
+  
+  .pin-auth-content {
+    padding: 10px;
+  }
+  
+  .auth-step {
+    max-width: 300px;
+  }
+  
+  .step-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .auth-step h2 {
+    font-size: 20px;
+  }
+  
+  .auth-step p {
+    font-size: 13px;
+  }
+  
+  .pin-input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}

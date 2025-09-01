@@ -1,0 +1,1059 @@
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  font-size: 18px;
+  color: #cccccc;
+  margin: 0;
+}
+
+/* 총 자산 요약 */
+.balance-summary {
+  margin-bottom: 40px;
+}
+
+.balance-card {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.balance-info h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  opacity: 0.9;
+}
+
+.balance-amount {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.balance-change {
+  font-size: 16px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.balance-icon {
+  font-size: 60px;
+  opacity: 0.3;
+}
+
+/* 코인 섹션 */
+.coins-section {
+  margin-bottom: 40px;
+}
+
+.coins-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.add-coin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.25);
+}
+
+.add-coin-btn:hover {
+  transform: translateY(-1px);
+}
+
+.coins-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.coin-card {
+  background: rgba(45, 45, 45, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+}
+
+.coin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.coin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.coin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.coin-image-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px;
+}
+
+.coin-text-icon {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #000;
+  font-size: 16px;
+}
+
+.coin-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffd700;
+  margin: 0 0 5px 0;
+}
+
+.coin-info p {
+  font-size: 14px;
+  color: #cccccc;
+  margin: 0;
+}
+
+.coin-change {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.change.positive {
+  color: #27ae60;
+}
+
+.change.negative {
+  color: #e74c3c;
+}
+
+.change svg {
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.coin-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.balance-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.balance-value {
+  font-size: 16px;
+  color: #cccccc;
+}
+
+.coin-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* 거래 내역 섹션 */
+.transactions-section {
+  margin-bottom: 40px;
+}
+
+.transactions-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 20px;
+}
+
+.transactions-list {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  transition: background-color 0.3s ease;
+  color: #ffffff;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.transaction-icon {
+  margin-right: 20px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.transaction-icon .receive {
+  color: #27ae60;
+}
+
+.transaction-icon .send {
+  color: #e74c3c;
+}
+
+.transaction-details {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.transaction-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+  flex-wrap: nowrap;
+}
+
+.transaction-type {
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.transaction-coin {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.transaction-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaction-address {
+  font-size: 14px;
+  color: #cccccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaction-status {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
+.status.completed {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.status.pending {
+  background: #fef9e7;
+  color: #f39c12;
+}
+
+.status.failed {
+  background: #fadbd8;
+  color: #e74c3c;
+}
+
+.transaction-time {
+  font-size: 12px;
+  color: #cccccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 빠른 액션 */
+.quick-actions h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 20px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.action-btn {
+  background: rgba(45, 45, 45, 0.95);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  padding: 24px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.action-btn:hover {
+  border-color: #ffd700;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.action-btn svg {
+  font-size: 32px;
+  color: #667eea;
+}
+
+/* 코인 추가 모달 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #ffd700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-content {
+  padding: 20px 24px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 24px 24px;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 28px;
+  }
+  
+  .balance-card {
+    padding: 30px;
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .balance-amount {
+    font-size: 36px;
+  }
+  
+  .coins-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .transaction-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    min-height: 60px;
+  }
+  
+  .transaction-icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  
+  .transaction-details {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .transaction-main {
+    margin-bottom: 3px;
+    gap: 8px;
+  }
+  
+  .transaction-type {
+    font-size: 14px;
+  }
+  
+  .transaction-coin {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  .transaction-amount {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  
+  .transaction-address {
+    font-size: 12px;
+  }
+  
+  .transaction-status {
+    min-width: 80px;
+    align-items: flex-end;
+  }
+  
+  .status {
+    padding: 4px 8px;
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+  
+  .transaction-time {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 24px;
+  }
+  
+  .balance-card {
+    padding: 20px;
+  }
+  
+  .balance-amount {
+    font-size: 28px;
+  }
+  
+  .coin-card {
+    padding: 20px;
+  }
+  
+  .transaction-item {
+    padding: 12px;
+    min-height: 50px;
+  }
+  
+  .transaction-icon {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+  
+  .transaction-main {
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+  
+  .transaction-type {
+    font-size: 13px;
+  }
+  
+  .transaction-coin {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+  
+  .transaction-amount {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  
+  .transaction-address {
+    font-size: 11px;
+  }
+  
+  .transaction-status {
+    min-width: 70px;
+  }
+  
+  .status {
+    padding: 3px 6px;
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+  
+  .transaction-time {
+    font-size: 10px;
+  }
+}
+
+/* 코인 마켓 섹션 */
+.coin-market-section {
+  background: #1a1a1a;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 40px;
+  border: 1px solid #333;
+}
+
+.market-header {
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 15px;
+  border: 1px solid #444;
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: #888;
+}
+
+.search-btn {
+  background: #007bff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.search-btn:hover {
+  background: #0056b3;
+}
+
+.market-tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.market-tab {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #cccccc;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.market-tab:hover {
+  background: #3a3a3a;
+  border-color: #555;
+}
+
+.market-tab.active {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.market-table {
+  background: #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #444;
+}
+
+.table-header {
+  display: flex;
+  background: #333;
+  padding: 15px 20px;
+  border-bottom: 1px solid #444;
+}
+
+.th {
+  color: #ffd700;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+  flex: 1;
+}
+
+.th.market-col {
+  flex: 2;
+}
+
+.th.price-col,
+.th.change-col,
+.th.volume-col {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.th:hover {
+  color: #ffed4e;
+}
+
+.sort-indicator {
+  font-size: 12px;
+  color: #ffd700;
+}
+
+.table-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: flex;
+  padding: 15px 20px 15px 10px;
+  border-bottom: 1px solid #333;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.table-row:hover {
+  background: #333;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.td {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.td.market-col {
+  flex: 2;
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.td.price-col,
+.td.change-col,
+.td.volume-col {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.coin-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  flex: 1;
+  padding-left: 0;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.favorite-btn:hover {
+  color: #ffd700;
+}
+
+.favorite-btn.active {
+  color: #ffd700;
+}
+
+.coin-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.coin-image-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.coin-text-icon {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #000;
+  font-size: 18px;
+}
+
+.coin-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.coin-name {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coin-symbol {
+  color: #888;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-value {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.change-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.change-value.positive {
+  color: #00ff88;
+}
+
+.change-value.negative {
+  color: #ff4757;
+}
+
+.change-icon {
+  font-size: 12px;
+}
+
+.volume-value {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .market-tabs {
+    gap: 5px;
+  }
+  
+  .market-tab {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .table-header,
+  .table-row {
+    padding: 10px 15px 10px 5px;
+  }
+  
+  .coin-info {
+    gap: 6px;
+    padding-left: 0;
+  }
+  
+  .coin-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .coin-image-icon {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .coin-text-icon {
+    font-size: 16px;
+  }
+  
+  .coin-name {
+    font-size: 14px;
+  }
+  
+  .coin-symbol {
+    font-size: 11px;
+  }
+  
+  .price-value,
+  .change-value,
+  .volume-value {
+    font-size: 13px;
+  }
+}
+
+.td.market .coin-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.td.market .coin-symbol {
+  color: #cccccc;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.td.price .price-value {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.td.change .change-value {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.td.change .change-value.positive {
+  color: #4caf50;
+}
+
+.td.change .change-value.negative {
+  color: #f44336;
+}
+
+.td.change .change-icon {
+  font-size: 12px;
+}
+
+.td.holdings .holdings-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.td.holdings .holdings-amount {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.td.holdings .holdings-value {
+  color: #cccccc;
+  font-size: 12px;
+}
+
+/* 테이블 반응형 */
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .th {
+    display: none;
+  }
+
+  .td {
+    position: relative;
+    padding-left: 40%;
+    min-height: 40px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  .td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: #ffd700;
+    font-size: 12px;
+    text-transform: uppercase;
+    width: 35%;
+  }
+
+  .td.market::before {
+    content: '마켓';
+  }
+
+  .td.price::before {
+    content: '현재가';
+  }
+
+  .td.change::before {
+    content: '변동폭';
+  }
+
+  .td.holdings::before {
+    content: '보유수량';
+  }
+
+  .table-row {
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-row:last-child {
+    margin-bottom: 0;
+  }
+}

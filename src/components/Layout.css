@@ -1,0 +1,394 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+}
+
+/* 상단 헤더 */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 20px 7px 20px;
+  background: rgba(45, 45, 45, 0.95);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.menu-toggle {
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  font-size: 22px;
+  color: #ffd700;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+.menu-toggle:active {
+  transform: scale(0.98);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo-image {
+  width: 320px;
+  height: auto;
+  object-fit: contain;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-avatar-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffd700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+}
+
+.user-avatar-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder-small {
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  padding-bottom: 100px; /* 하단 탭바 공간 */
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 하단 탭바 */
+.bottom-tabs {
+  display: flex;
+  background: rgba(45, 45, 45, 0.95);
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.tab-item:hover {
+  color: #ffd700;
+}
+
+.tab-item.active {
+  color: #ffd700;
+}
+
+.tab-item svg {
+  font-size: 20px;
+}
+
+/* 사이드바 (햄버거 메뉴) */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+  color: #ffd700;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  top: 0;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.logo-image {
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffd700;
+  margin: 0;
+}
+
+.sidebar-logo {
+  font-size: 36px;
+  color: #3498db;
+  margin-bottom: 15px;
+}
+
+.sidebar-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.user-info {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #3498db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.user-details h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: white;
+}
+
+.user-details p {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.nav-item {
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  border-right: 3px solid #ffd700;
+}
+
+.nav-item svg {
+  font-size: 18px;
+  min-width: 20px;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  color: #e74c3c;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.5);
+}
+
+
+
+/* 모바일 오버레이 */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 3px 15px 7px 15px;
+  }
+  
+  .header-title {
+    font-size: 18px;
+  }
+  
+  .header-logo-image {
+    width: 180px;
+    height: auto;
+  }
+  
+  .main-content {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+  
+  .content-wrapper {
+    padding: 0;
+  }
+  
+  .bottom-tabs {
+    padding: 8px 0;
+  }
+  
+  .tab-item {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+  
+  .tab-item svg {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 3px 12px 7px 12px;
+  }
+  
+  .header-title {
+    font-size: 16px;
+  }
+  
+  .header-logo-image {
+    width: 120px;
+    height: auto;
+  }
+  
+  .main-content {
+    padding: 12px;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+  }
+  
+  .content-wrapper {
+    padding: 15px;
+  }
+  
+  .sidebar-header {
+    padding: 20px;
+  }
+  
+  .user-info {
+    padding: 15px;
+  }
+}

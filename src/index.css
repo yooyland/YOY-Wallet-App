@@ -1,0 +1,106 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Dark Mode (Black + Gold) */
+  --dark-bg-primary: #000000;
+  --dark-bg-secondary: #1a1a1a;
+  --dark-bg-tertiary: #2d2d2d;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #cccccc;
+  --dark-accent: #ffd700;
+  --dark-accent-hover: #ffed4e;
+  --dark-border: rgba(255, 215, 0, 0.2);
+  --dark-card-bg: rgba(45, 45, 45, 0.95);
+  --dark-input-bg: rgba(60, 60, 60, 0.8);
+
+  /* Light Mode (White + Blue) */
+  --light-bg-primary: #ffffff;
+  --light-bg-secondary: #f8f9fa;
+  --light-bg-tertiary: #e9ecef;
+  --light-text-primary: #2c3e50;
+  --light-text-secondary: #7f8c8d;
+  --light-accent: #007bff;
+  --light-accent-hover: #0056b3;
+  --light-border: rgba(0, 123, 255, 0.2);
+  --light-card-bg: rgba(255, 255, 255, 0.95);
+  --light-input-bg: rgba(248, 249, 250, 0.8);
+
+  /* Admin Mode (Black + Purple) */
+  --admin-bg-primary: #000000;
+  --admin-bg-secondary: #1a1a1a;
+  --admin-bg-tertiary: #2d2d2d;
+  --admin-text-primary: #ffffff;
+  --admin-text-secondary: #cccccc;
+  --admin-accent: #8a2be2;
+  --admin-accent-hover: #9370db;
+  --admin-border: rgba(138, 43, 226, 0.2);
+  --admin-card-bg: rgba(45, 45, 45, 0.95);
+  --admin-input-bg: rgba(60, 60, 60, 0.8);
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --accent: var(--dark-accent);
+  --accent-hover: var(--dark-accent-hover);
+  --border: var(--dark-border);
+  --card-bg: var(--dark-card-bg);
+  --input-bg: var(--dark-input-bg);
+}
+
+/* Light Mode Styles */
+[data-theme="light"] {
+  --bg-primary: var(--light-bg-primary);
+  --bg-secondary: var(--light-bg-secondary);
+  --bg-tertiary: var(--light-bg-tertiary);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --accent: var(--light-accent);
+  --accent-hover: var(--light-accent-hover);
+  --border: var(--light-border);
+  --card-bg: var(--light-card-bg);
+  --input-bg: var(--light-input-bg);
+}
+
+/* Admin Mode Styles (overrides both themes) */
+.admin-mode {
+  --bg-primary: var(--admin-bg-primary);
+  --bg-secondary: var(--admin-bg-secondary);
+  --bg-tertiary: var(--admin-bg-tertiary);
+  --text-primary: var(--admin-text-primary);
+  --text-secondary: var(--admin-text-secondary);
+  --accent: var(--admin-accent);
+  --accent-hover: var(--admin-accent-hover);
+  --border: var(--admin-border);
+  --card-bg: var(--admin-card-bg);
+  --input-bg: var(--admin-input-bg);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  min-height: 100vh;
+}

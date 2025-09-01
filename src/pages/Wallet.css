@@ -1,0 +1,848 @@
+.wallet {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 지갑 설정 */
+.wallet-setup {
+  padding: 20px;
+}
+
+.setup-card {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.setup-card h2 {
+  color: #ffd700;
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.setup-card p {
+  color: #cccccc;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.setup-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.setup-actions .btn {
+  min-width: 150px;
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+/* 계정 관리 */
+.accounts-section {
+  margin: 20px 0;
+}
+
+.accounts-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.account-item {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-align: center;
+}
+
+.account-item:hover {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.account-item.active {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.account-index {
+  display: block;
+  color: #ffd700;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.account-address {
+  display: block;
+  color: #cccccc;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* 니모닉 표시 */
+.mnemonic-display {
+  margin: 20px 0;
+}
+
+.mnemonic-text {
+  background: rgba(60, 60, 60, 0.8);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  color: #ffffff;
+  word-spacing: 8px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+/* 모달 스타일 개선 */
+.modal textarea {
+  width: 100%;
+  background: rgba(60, 60, 60, 0.8);
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 12px;
+  color: #ffffff;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.modal textarea:focus {
+  border-color: #ffd700;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.modal textarea::placeholder {
+  color: #888;
+}
+
+.wallet-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.wallet-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.wallet-header p {
+  font-size: 18px;
+  color: #cccccc;
+  margin: 0;
+}
+
+/* 지갑 주소 섹션 */
+.wallet-address-section {
+  margin-bottom: 40px;
+}
+
+.address-card {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  color: #ffffff;
+}
+
+.address-info {
+  flex: 1;
+}
+
+.address-info h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 15px;
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.address-text {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  color: #ffffff;
+  background: rgba(60, 60, 60, 0.8);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  word-break: break-all;
+}
+
+.copy-btn {
+  background: #ffd700;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: #ffed4e;
+  transform: translateY(-2px);
+}
+
+.address-note {
+  font-size: 14px;
+  color: #cccccc;
+  margin: 0;
+}
+
+.address-actions {
+  display: flex;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.address-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* 코인 섹션 */
+.coins-section {
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.coins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.coin-item {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+}
+
+.coin-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.coin-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.coin-icon {
+  font-size: 32px;
+  color: #f39c12;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef9e7;
+  border-radius: 50%;
+}
+
+.coin-details h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 5px 0;
+}
+
+.coin-details p {
+  font-size: 14px;
+  color: #cccccc;
+  margin: 0;
+}
+
+.coin-balance {
+  text-align: right;
+  margin-right: 30px;
+}
+
+.balance-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.balance-value {
+  font-size: 16px;
+  color: #cccccc;
+}
+
+.coin-actions {
+  display: flex;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.coin-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffd700;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #7f8c8d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: #f8f9fa;
+  color: #2c3e50;
+}
+
+.modal-content {
+  padding: 30px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  padding: 25px 30px;
+  border-top: 1px solid #e9ecef;
+}
+
+/* 폼 요소 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(60, 60, 60, 0.8);
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.balance-info {
+  display: block;
+  font-size: 12px;
+  color: #cccccc;
+  margin-top: 5px;
+}
+
+/* QR 섹션 */
+.qr-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.qr-placeholder {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  background: rgba(60, 60, 60, 0.8);
+  border: 2px dashed rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cccccc;
+}
+
+.qr-placeholder svg {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.qr-placeholder p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.address-section {
+  margin-bottom: 20px;
+}
+
+/* 버튼 스타일 */
+.btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000000;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.btn-secondary {
+  background: rgba(45, 45, 45, 0.95);
+  color: #ffffff;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: #ffd700;
+  color: #ffd700;
+  transform: translateY(-2px);
+}
+
+/* 코인별 지갑 주소 섹션 */
+.coin-wallets-section {
+  margin-bottom: 40px;
+}
+
+.coin-wallets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.coin-wallet-item {
+  background: rgba(45, 45, 45, 0.95);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+}
+
+.coin-wallet-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.coin-wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.coin-wallet-header .coin-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coin-wallet-header .coin-icon {
+  font-size: 24px;
+  color: #f39c12;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef9e7;
+  border-radius: 50%;
+}
+
+.coin-wallet-header .coin-details h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 3px 0;
+}
+
+.coin-wallet-header .coin-details p {
+  font-size: 12px;
+  color: #cccccc;
+  margin: 0;
+}
+
+.network-badge {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.wallet-address-info {
+  margin-bottom: 20px;
+}
+
+.address-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.address-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffd700;
+  min-width: 80px;
+}
+
+.address-row .address-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.address-row .address-text {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #ffffff;
+  background: rgba(60, 60, 60, 0.8);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  word-break: break-all;
+  flex: 1;
+}
+
+.address-row .copy-btn {
+  background: #ffd700;
+  color: #000000;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.address-row .copy-btn:hover {
+  background: #ffed4e;
+  transform: translateY(-2px);
+}
+
+.balance-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.balance-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffd700;
+  min-width: 80px;
+}
+
+.balance-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.wallet-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+
+.wallet-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  min-width: 80px;
+  justify-content: center;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .wallet-header h1 {
+    font-size: 28px;
+  }
+  
+  .address-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .address-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .address-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .coin-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .coin-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .coin-balance {
+    text-align: left;
+    margin-right: 0;
+  }
+  
+  .coin-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .coin-actions .btn {
+    flex: 1;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  .coin-wallet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .coin-wallet-header .coin-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .address-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .address-label {
+    min-width: auto;
+  }
+  
+  .address-row .address-display {
+    width: 100%;
+  }
+  
+  .balance-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .balance-label {
+    min-width: auto;
+  }
+  
+  .wallet-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .wallet-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-header h1 {
+    font-size: 24px;
+  }
+  
+  .address-card {
+    padding: 20px;
+  }
+  
+  .address-text {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .coin-item {
+    padding: 20px;
+  }
+  
+  .coin-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+  
+  .modal {
+    margin: 10px;
+  }
+  
+  .modal-header,
+  .modal-content,
+  .modal-footer {
+    padding: 20px;
+  }
+
+  .coin-wallet-item {
+    padding: 20px;
+  }
+  
+  .coin-wallet-header .coin-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+  
+  .address-row .address-text {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  
+  .address-row .copy-btn {
+    padding: 8px;
+  }
+}
