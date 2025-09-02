@@ -386,7 +386,20 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(coinsWithLogos));
     };
 
-    initializeCoinsWithLogos();
+    // 1) 저장된 코인이 있으면 그것을 사용 (관리자가 변경 전까지 유지)
+    const savedCoins = localStorage.getItem('yoy_wallet_admin_coins');
+    if (savedCoins) {
+      try {
+        const parsed = JSON.parse(savedCoins);
+        dispatch({ type: 'LOAD_ADMIN_COINS', payload: parsed });
+      } catch (e) {
+        console.error('관리자 코인 로드 실패, 초기화 수행:', e);
+        initializeCoinsWithLogos();
+      }
+    } else {
+      // 2) 저장본이 없을 때만 초기 기본 코인+로고를 생성
+      initializeCoinsWithLogos();
+    }
   }, []);
 
   const addAdmin = async (adminData: Omit<AdminUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> => {
@@ -448,18 +461,16 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateCoin = async (coinId: string, coinData: Partial<AdminCoin>): Promise<void> => {
     dispatch({ type: 'ADMIN_START' });
     try {
-      const updatedCoin = state.adminCoins.map(coin => 
-        coin.id === coinId 
+      // 최신 스냅샷 기준으로 병합(동시성 안전)
+      const snapshot = JSON.parse(localStorage.getItem('yoy_wallet_admin_coins') || 'null') || state.adminCoins;
+      const merged = (snapshot as AdminCoin[]).map(coin =>
+        coin.id === coinId
           ? { ...coin, ...coinData, updatedAt: new Date().toISOString() }
           : coin
       );
-      
-      localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(updatedCoin));
-      
-      const coin = updatedCoin.find(c => c.id === coinId);
-      if (coin) {
-        dispatch({ type: 'UPDATE_COIN', payload: coin });
-      }
+      localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(merged));
+      const coin = merged.find(c => c.id === coinId);
+      if (coin) dispatch({ type: 'UPDATE_COIN', payload: coin });
       dispatch({ type: 'ADMIN_SUCCESS' });
     } catch (error) {
       dispatch({ type: 'ADMIN_FAILURE', payload: '코인 업데이트에 실패했습니다.' });
