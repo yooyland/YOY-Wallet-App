@@ -413,13 +413,13 @@ const Dashboard: React.FC = () => {
                      {formatPercentage(coin.change24h)}
                    </div>
                  </div>
-                             <div className="coin-balance">
-                 <div className="balance-details">
-                   <span className="balance-amount">{coin.balance.toLocaleString()} {coin.symbol}</span>
-                   <span className="balance-value">{formatCurrency(coin.balance * coin.price)}</span>
+                 <div className="coin-balance">
+                   <div className="coin-price">{formatCurrency(coin.price)}</div>
+                   <div className="balance-details">
+                     <span className="balance-amount">{coin.balance.toLocaleString()} {coin.symbol}</span>
+                     <span className="balance-value">{formatCurrency(coin.balance * coin.price)}</span>
+                   </div>
                  </div>
-                 <div className="coin-price">{formatCurrency(coin.price)}</div>
-               </div>
             </div>
           ))}
         </div>
