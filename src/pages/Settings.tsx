@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSecurity } from '../contexts/SecurityContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -42,6 +43,7 @@ interface AppSettings {
 }
 
 const Settings: React.FC = () => {
+  const { currency, setCurrency } = useCurrency();
   const { user } = useAuth();
   const { securitySettings: globalSecuritySettings, setupPin, disablePin, enableBiometric, disableBiometric, isBiometricAvailable } = useSecurity();
   const { t, currentLanguage, setLanguage, availableLanguages } = useLanguage();
@@ -525,8 +527,8 @@ const Settings: React.FC = () => {
                 <p>표시 통화를 선택합니다</p>
               </div>
               <select
-                value={appSettings.currency}
-                onChange={(e) => handleAppSettingChange('currency', e.target.value)}
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as any)}
               >
                 <option value="USD">USD (달러)</option>
                 <option value="KRW">KRW (원)</option>

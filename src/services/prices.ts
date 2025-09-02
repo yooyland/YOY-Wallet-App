@@ -23,10 +23,10 @@ export interface MarketData {
 }
 
 // 실제 가격 데이터 가져오기
-export const getRealTimePrices = async (coinIds: string[]): Promise<CoinPrice[]> => {
+export const getRealTimePrices = async (coinIds: string[], vsCurrency: string = 'usd'): Promise<CoinPrice[]> => {
   try {
     const response = await fetch(
-      `${COINGECKO_API_BASE}/coins/markets?vs_currency=usd&ids=${coinIds.join(',')}&order=market_cap_desc&per_page=100&page=1&sparkline=false&locale=en`
+      `${COINGECKO_API_BASE}/coins/markets?vs_currency=${vsCurrency}&ids=${coinIds.join(',')}&order=market_cap_desc&per_page=100&page=1&sparkline=false&locale=en`
     );
     
     if (!response.ok) {

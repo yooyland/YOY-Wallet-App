@@ -5,6 +5,7 @@ import { useAdmin } from '../contexts/AdminContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { getRealTimePrices, CoinPrice } from '../services/prices';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { FaStar, FaStar as FaStarSolid, FaPlus, FaSearch, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import './Dashboard.css';
 
@@ -37,6 +38,7 @@ const Dashboard: React.FC = () => {
   const { adminCoins } = useAdmin();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { currency, formatMoney } = useCurrency();
   
   const [activeMarket, setActiveMarket] = useState<'KRW' | 'ETH' | 'BTC' | 'BSC' | 'USDT' | 'MY' | 'FAV'>('KRW');
   const [searchTerm, setSearchTerm] = useState('');
@@ -190,7 +192,7 @@ const Dashboard: React.FC = () => {
           .filter(coin => coin.isActive)
           .map(coin => getCoinGeckoId(coin.symbol));
         
-        const prices = await getRealTimePrices(coinIds);
+        const prices = await getRealTimePrices(coinIds, currency.toLowerCase());
         setRealTimePrices(prices);
       } catch (error) {
         console.error('가격 데이터 가져오기 실패:', error);
@@ -260,12 +262,7 @@ const Dashboard: React.FC = () => {
     setRecentTransactions(mockTransactions);
   }, []);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) => formatMoney(amount);
 
   const formatPercentage = (change: number) => {
     const isPositive = change >= 0;

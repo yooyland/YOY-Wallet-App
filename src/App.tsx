@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { WalletProvider } from './contexts/WalletContext';
 import { SecurityProvider } from './contexts/SecurityContext';
@@ -169,13 +170,15 @@ const App: React.FC = () => {
     <AuthProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <WalletProvider>
-            <SecurityProvider>
-              <AdminProvider>
-                <AppContent />
-              </AdminProvider>
-            </SecurityProvider>
-          </WalletProvider>
+          <CurrencyProvider>
+            <WalletProvider>
+              <SecurityProvider>
+                <AdminProvider>
+                  <AppContent />
+                </AdminProvider>
+              </SecurityProvider>
+            </WalletProvider>
+          </CurrencyProvider>
         </LanguageProvider>
       </ThemeProvider>
     </AuthProvider>
