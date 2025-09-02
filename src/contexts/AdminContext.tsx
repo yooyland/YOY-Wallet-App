@@ -386,20 +386,38 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(coinsWithLogos));
     };
 
-    // 1) 저장된 코인이 있으면 그것을 사용 (관리자가 변경 전까지 유지)
-    const savedCoins = localStorage.getItem('yoy_wallet_admin_coins');
-    if (savedCoins) {
+    // 서버 동기화 시도 → 실패 시 localStorage 폴백
+    const fetchFromServer = async () => {
       try {
-        const parsed = JSON.parse(savedCoins);
-        dispatch({ type: 'LOAD_ADMIN_COINS', payload: parsed });
+        const res = await fetch('/api/admin-coins');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.items) && data.items.length > 0) {
+            dispatch({ type: 'LOAD_ADMIN_COINS', payload: data.items });
+            localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(data.items));
+            return;
+          }
+        }
       } catch (e) {
-        console.error('관리자 코인 로드 실패, 초기화 수행:', e);
-        initializeCoinsWithLogos();
+        // 서버 미가동 등은 폴백으로 처리
       }
-    } else {
-      // 2) 저장본이 없을 때만 초기 기본 코인+로고를 생성
+
+      // 1) 저장된 코인이 있으면 그것을 사용 (관리자가 변경 전까지 유지)
+      const savedCoins = localStorage.getItem('yoy_wallet_admin_coins');
+      if (savedCoins) {
+        try {
+          const parsed = JSON.parse(savedCoins);
+          dispatch({ type: 'LOAD_ADMIN_COINS', payload: parsed });
+          return;
+        } catch (e) {
+          console.error('관리자 코인 로드 실패, 초기화 수행:', e);
+        }
+      }
+      // 2) 저장본/서버 둘 다 없을 때만 초기 기본 코인+로고 생성
       initializeCoinsWithLogos();
-    }
+    };
+
+    fetchFromServer();
   }, []);
 
   const addAdmin = async (adminData: Omit<AdminUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> => {
@@ -469,6 +487,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           : coin
       );
       localStorage.setItem('yoy_wallet_admin_coins', JSON.stringify(merged));
+      // 서버로도 동기화(베스트 에포트)
+      try {
+        await fetch('/api/admin-coins', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: merged }) });
+      } catch {}
       const coin = merged.find(c => c.id === coinId);
       if (coin) dispatch({ type: 'UPDATE_COIN', payload: coin });
       dispatch({ type: 'ADMIN_SUCCESS' });

@@ -40,6 +40,7 @@ app.use('/api/assets', require('./routes/assets'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/coins', require('./routes/coins'));
+app.use('/api/admin-coins', require('./routes/adminCoins'));
 
 // 404 핸들러
 app.use('*', (req, res) => {
