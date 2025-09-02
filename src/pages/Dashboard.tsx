@@ -264,12 +264,11 @@ const Dashboard: React.FC = () => {
 
   const formatCurrency = (amount: number) => {
     if (currency === 'KRW') {
-      const underHundred = amount < 100;
       const formatted = new Intl.NumberFormat('ko-KR', {
-        minimumFractionDigits: underHundred ? 4 : 0,
-        maximumFractionDigits: underHundred ? 4 : 0,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       }).format(amount);
-      return `₩${formatted}`; // 폰트 문제 회피를 위해 직접 기호 프리픽스
+      return `₩${formatted}`;
     }
     return formatMoney(amount);
   };
