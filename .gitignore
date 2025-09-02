@@ -123,3 +123,19 @@ wallets/
 # Private keys and sensitive data
 private/
 secrets/
+
+# Large design bundles
+polygon-exclusive-vip-card-*/
+*.zip
+*.ai
+*.eps
+
+# Env files
+.env
+server/.env
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+

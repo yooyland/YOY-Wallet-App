@@ -357,7 +357,15 @@ const Dashboard: React.FC = () => {
 
       {/* 총 자산 요약 */}
       <div className="balance-summary">
-        <div className="balance-card">
+        <div
+          className="balance-card"
+          style={{
+            backgroundImage: `linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${process.env.PUBLIC_URL}/card.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
           <div className="balance-info">
             <h2>총 자산</h2>
             <div className="balance-amount">{formatCurrency(totalBalance)}</div>

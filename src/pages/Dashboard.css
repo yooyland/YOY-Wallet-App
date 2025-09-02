@@ -27,6 +27,7 @@
 }
 
 .balance-card {
+  /* 이미지는 컴포넌트 인라인 스타일에서 주입 (PUBLIC_URL/card.png) */
   background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
   color: white;
   padding: 40px;

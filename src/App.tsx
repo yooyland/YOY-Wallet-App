@@ -8,10 +8,8 @@ import { SecurityProvider } from './contexts/SecurityContext';
 import { AdminProvider } from './contexts/AdminContext';
 import { useAuth } from './contexts/AuthContext';
 import { useAdmin } from './contexts/AdminContext';
-import { useTheme } from './contexts/ThemeContext';
-import { useLanguage } from './contexts/LanguageContext';
 import { useSecurity } from './contexts/SecurityContext';
-import { FaBars, FaUser, FaChartLine, FaHistory, FaShieldAlt, FaCog, FaHeadset, FaEnvelope } from 'react-icons/fa';
+import { FaBars } from 'react-icons/fa';
 import './App.css';
 
 // 페이지 컴포넌트들
@@ -35,11 +33,11 @@ import AdminPage from './pages/AdminPage';
 import CustomerSupport from './pages/CustomerSupport';
 import Feedback from './pages/Feedback';
 import BottomNavigation from './components/BottomNavigation';
+import Sidebar from './components/Sidebar';
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { isAdmin } = useAdmin();
-  const { t } = useLanguage();
   const { securitySettings } = useSecurity();
   const location = useLocation();
   const navigate = useNavigate();
@@ -88,21 +86,7 @@ const AppContent: React.FC = () => {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
-
-
-
-  const sidebarItems = [
-    { path: '/analytics', icon: <FaChartLine />, label: t('analytics') },
-    { path: '/history', icon: <FaHistory />, label: t('history') },
-    { path: '/security', icon: <FaShieldAlt />, label: t('security') },
-    { path: '/settings', icon: <FaCog />, label: '설정' },
-    { path: '/customer-support', icon: <FaHeadset />, label: '고객센터' },
-    { path: '/feedback', icon: <FaEnvelope />, label: '의견 보내기' }
-  ];
-
-  if (isAdmin) {
-    sidebarItems.unshift({ path: '/admin', icon: <FaUser />, label: t('admin') });
-  }
+  
 
   return (
     <div className="app">
@@ -148,34 +132,8 @@ const AppContent: React.FC = () => {
         </div>
       </header>
 
-      {/* 사이드바 */}
-      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <h3>메뉴</h3>
-          <button className="close-btn" onClick={closeSidebar}>
-            ×
-          </button>
-        </div>
-        
-        <nav className="sidebar-nav">
-          {sidebarItems.map((item) => (
-            <a
-              key={item.path}
-              href={item.path}
-              className={`sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-      </div>
-
-      {/* 사이드바 오버레이 */}
-      {sidebarOpen && (
-        <div className="sidebar-overlay" onClick={closeSidebar} />
-      )}
+      {/* 사이드바 (컴포넌트 통합) */}
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
       {/* 메인 콘텐츠 */}
       <main className="main-content">
