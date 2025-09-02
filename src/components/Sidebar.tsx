@@ -71,8 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       id: 'exchange',
       label: '거래소',
       icon: <FaExchangeAlt />,
-      path: '/exchange',
-      description: '코인 거래'
+      path: '/coins',
+      description: '코인 마켓'
     },
     {
       id: 'profile',
@@ -102,21 +102,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       id: 'notifications',
       label: '알림 설정',
       icon: <FaBell />,
-      path: '/notifications',
+      path: '/settings',
       description: '알림 관리'
     },
     {
       id: 'appearance',
       label: '외관 설정',
       icon: <FaPalette />,
-      path: '/appearance',
+      path: '/settings',
       description: '테마 및 언어 설정'
     },
     {
       id: 'privacy',
       label: '개인정보',
       icon: <FaLock />,
-      path: '/privacy',
+      path: '/settings',
       description: '개인정보 관리'
     },
     {
@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       id: 'qr-code',
       label: 'QR 코드 생성',
       icon: <FaQrcode />,
-      action: () => handleNavigation('/qr-generator'),
+      action: () => handleNavigation('/sent'),
       description: 'QR 코드 생성'
     },
     {
@@ -154,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       id: 'address-book',
       label: '주소록',
       icon: <FaAddressBook />,
-      action: () => handleNavigation('/address-book'),
+      action: () => handleNavigation('/receive'),
       description: '주소록 관리'
     }
   ];
@@ -165,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       id: 'admin',
       label: '관리자 메뉴',
       icon: <FaShieldAlt />,
-      path: '/adminpage',
+      path: '/admin-page',
       description: '시스템 관리'
     }
   ];
