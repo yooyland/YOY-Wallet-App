@@ -1,7 +1,24 @@
-import React, { useState } from 'react';
-import { FaShieldAlt, FaKey, FaLock, FaUserShield, FaCheck, FaTimes, FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useSecurity } from '../contexts/SecurityContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { 
+  FaUserShield, 
+  FaFingerprint, 
+  FaKey, 
+  FaShieldAlt, 
+  FaMobileAlt,
+  FaCheck, 
+  FaTimes,
+  FaEye,
+  FaEyeSlash,
+  FaDownload,
+  FaUpload,
+  FaTrash,
+  FaLock,
+  FaUnlock
+} from 'react-icons/fa';
 import './Security.css';
 
 interface SecurityStatus {
@@ -10,19 +27,51 @@ interface SecurityStatus {
   passwordStrong: boolean;
   backupComplete: boolean;
   deviceSecure: boolean;
+  pinEnabled: boolean;
+  patternEnabled: boolean;
+  sessionTimeout: number;
+}
+
+interface BackupData {
+  walletAddresses: string[];
+  mnemonic: string;
+  privateKeys: string[];
+  createdAt: string;
+  version: string;
 }
 
 const Security: React.FC = () => {
+  const { user } = useAuth();
+  const { 
+    securitySettings, 
+    setupPin, 
+    disablePin, 
+    verifyPin,
+    enableBiometric,
+    disableBiometric,
+    authenticateWithBiometric
+  } = useSecurity();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  
   const [securityStatus, setSecurityStatus] = useState<SecurityStatus>({
     twoFactorAuth: false,
-    biometricAuth: true,
+    biometricAuth: securitySettings.biometricEnabled,
     passwordStrong: true,
     backupComplete: false,
-    deviceSecure: true
+    deviceSecure: true,
+    pinEnabled: securitySettings.pinEnabled,
+    patternEnabled: false,
+    sessionTimeout: 30
   });
 
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [showPatternModal, setShowPatternModal] = useState(false);
+  const [backupData, setBackupData] = useState<BackupData | null>(null);
+  
   const [passwordData, setPasswordData] = useState({
     current: '',
     new: '',
@@ -32,20 +81,66 @@ const Security: React.FC = () => {
     showConfirm: false
   });
 
+  const [pinData, setPinData] = useState({
+    current: '',
+    new: '',
+    confirm: '',
+    showCurrent: false,
+    showNew: false,
+    showConfirm: false
+  });
+
+  const [patternData, setPatternData] = useState({
+    pattern: '',
+    confirm: '',
+    showPattern: false
+  });
+
   const securityScore = Object.values(securityStatus).filter(Boolean).length;
   const maxScore = Object.keys(securityStatus).length;
 
-  const handleToggleSecurity = (key: keyof SecurityStatus) => {
+  // 보안 상태 업데이트
+  useEffect(() => {
     setSecurityStatus(prev => ({
       ...prev,
-      [key]: !prev[key]
+      biometricAuth: securitySettings.biometricEnabled,
+      pinEnabled: securitySettings.pinEnabled
     }));
-    
-    toast.success(
-      securityStatus[key] 
-        ? `${getSecurityLabel(key)} 비활성화됨` 
-        : `${getSecurityLabel(key)} 활성화됨`
-    );
+  }, [securitySettings]);
+
+  const handleToggleSecurity = async (key: keyof SecurityStatus) => {
+    try {
+      switch (key) {
+        case 'biometricAuth':
+          if (securityStatus.biometricAuth) {
+            await disableBiometric();
+          } else {
+            await enableBiometric();
+          }
+          break;
+        case 'pinEnabled':
+          if (securityStatus.pinEnabled) {
+            setShowPinModal(true);
+          } else {
+            setShowPinModal(true);
+          }
+          break;
+        case 'patternEnabled':
+          if (securityStatus.patternEnabled) {
+            setShowPatternModal(true);
+          } else {
+            setShowPatternModal(true);
+          }
+          break;
+        default:
+          setSecurityStatus(prev => ({
+            ...prev,
+            [key]: !prev[key]
+          }));
+      }
+    } catch (error) {
+      console.error('보안 설정 변경 실패:', error);
+    }
   };
 
   const getSecurityLabel = (key: keyof SecurityStatus): string => {
@@ -54,24 +149,27 @@ const Security: React.FC = () => {
       biometricAuth: '생체 인증',
       passwordStrong: '강력한 비밀번호',
       backupComplete: '지갑 백업',
-      deviceSecure: '기기 보안'
+      deviceSecure: '기기 보안',
+      pinEnabled: 'PIN 잠금',
+      patternEnabled: '패턴 잠금',
+      sessionTimeout: '세션 타임아웃'
     };
     return labels[key];
   };
 
   const handlePasswordChange = () => {
     if (passwordData.new !== passwordData.confirm) {
-      toast.error('새 비밀번호가 일치하지 않습니다.');
+      alert('새 비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (passwordData.new.length < 8) {
-      toast.error('비밀번호는 최소 8자 이상이어야 합니다.');
+      alert('비밀번호는 최소 8자 이상이어야 합니다.');
       return;
     }
 
     // 실제로는 API 호출
-    toast.success('비밀번호가 변경되었습니다.');
+    alert('비밀번호가 변경되었습니다.');
     setPasswordData({
       current: '',
       new: '',
@@ -83,182 +181,289 @@ const Security: React.FC = () => {
     setShowPasswordChange(false);
   };
 
-  const handleBackupWallet = () => {
-    // 실제로는 지갑 백업 프로세스
-    const isConfirmed = window.confirm(
-      '지갑을 백업하시겠습니까? 안전한 장소에 니모닉을 보관하세요.'
-    );
-    
-    if (isConfirmed) {
-      setSecurityStatus(prev => ({ ...prev, backupComplete: true }));
-      toast.success('지갑 백업이 완료되었습니다.');
+  const handlePinChange = async () => {
+    if (pinData.new !== pinData.confirm) {
+      alert('새 PIN이 일치하지 않습니다.');
+      return;
     }
+
+    if (!/^\d{4,6}$/.test(pinData.new)) {
+      alert('PIN은 4-6자리 숫자여야 합니다.');
+      return;
+    }
+
+    try {
+      if (securityStatus.pinEnabled) {
+        // PIN 변경
+        if (pinData.current !== securitySettings.pin) {
+          alert('현재 PIN이 올바르지 않습니다.');
+          return;
+        }
+        await setupPin(pinData.new);
+      } else {
+        // PIN 설정
+        await setupPin(pinData.new);
+      }
+      
+      alert(securityStatus.pinEnabled ? 'PIN이 변경되었습니다.' : 'PIN이 설정되었습니다.');
+      setPinData({
+        current: '',
+        new: '',
+        confirm: '',
+        showCurrent: false,
+        showNew: false,
+        showConfirm: false
+      });
+      setShowPinModal(false);
+    } catch (error) {
+      alert('PIN 설정에 실패했습니다.');
+    }
+  };
+
+  const handleBackupWallet = () => {
+    // 실제 지갑 백업 데이터 생성
+    const backup: BackupData = {
+      walletAddresses: ['0x1234...5678', '0x8765...4321'],
+      mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+      privateKeys: ['0x1234...5678', '0x8765...4321'],
+      createdAt: new Date().toISOString(),
+      version: '1.0.0'
+    };
+    
+    setBackupData(backup);
+    setShowBackupModal(true);
+    
+    // 백업 완료 상태 업데이트
+    setSecurityStatus(prev => ({
+      ...prev,
+      backupComplete: true
+    }));
+  };
+
+  const downloadBackup = () => {
+    if (!backupData) return;
+    
+    const dataStr = JSON.stringify(backupData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `yoy-wallet-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('ko-KR', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
   };
 
   return (
     <div className="security">
       <div className="security-header">
-        <h1>
-          <FaShieldAlt />
-          보안
-        </h1>
-        <p>지갑과 계정의 보안을 강화하고 관리하세요</p>
+        <h1>보안 설정</h1>
+        <p>계정과 자산을 안전하게 보호하세요</p>
       </div>
 
-      <div className="security-content">
-        {/* 보안 점수 */}
-        <div className="security-score-card">
-          <div className="score-info">
-            <h3>보안 점수</h3>
-            <div className="score-display">
-              <span className="score">{securityScore}</span>
-              <span className="max-score">/ {maxScore}</span>
+      {/* 보안 점수 */}
+      <div className="security-score">
+        <div className="score-circle">
+          <div className="score-number">{securityScore}</div>
+          <div className="score-max">/ {maxScore}</div>
+        </div>
+        <div className="score-info">
+          <h3>보안 점수</h3>
+          <p>보안 설정을 완료하여 점수를 높이세요</p>
+        </div>
+      </div>
+
+      {/* 보안 설정 목록 */}
+      <div className="security-settings">
+        <h3>보안 설정</h3>
+        
+        <div className="security-item">
+          <div className="item-info">
+            <div className="item-icon">
+              <FaUserShield />
             </div>
-            <div className="score-bar">
-              <div 
-                className="score-fill" 
-                style={{ width: `${(securityScore / maxScore) * 100}%` }}
-              ></div>
+            <div className="item-details">
+              <h4>2단계 인증 (2FA)</h4>
+              <p>로그인 시 추가 보안 코드로 계정을 보호합니다</p>
             </div>
           </div>
-          <div className="score-status">
-            {securityScore === maxScore ? (
-              <div className="status excellent">
-                <FaShieldAlt />
-                <span>우수함</span>
-              </div>
-            ) : securityScore >= maxScore * 0.7 ? (
-              <div className="status good">
-                <FaShieldAlt />
-                <span>양호함</span>
-              </div>
-            ) : (
-              <div className="status poor">
-                <FaShieldAlt />
-                <span>개선 필요</span>
-              </div>
-            )}
+          <div className="item-controls">
+            <div className="status-indicator">
+              {securityStatus.twoFactorAuth ? (
+                <FaCheck className="enabled" />
+              ) : (
+                <FaTimes className="disabled" />
+              )}
+            </div>
+            <button 
+              className={`toggle-btn ${securityStatus.twoFactorAuth ? 'enabled' : 'disabled'}`}
+              onClick={() => handleToggleSecurity('twoFactorAuth')}
+            >
+              {securityStatus.twoFactorAuth ? '비활성화' : '활성화'}
+            </button>
           </div>
         </div>
 
-        {/* 보안 설정 목록 */}
-        <div className="security-settings">
-          <h3>보안 설정</h3>
-          
-          <div className="security-item">
-            <div className="item-info">
-              <div className="item-icon">
-                <FaUserShield />
-              </div>
-              <div className="item-details">
-                <h4>2단계 인증 (2FA)</h4>
-                <p>로그인 시 추가 보안 코드로 계정을 보호합니다</p>
-              </div>
+        <div className="security-item">
+          <div className="item-info">
+            <div className="item-icon">
+              <FaFingerprint />
             </div>
-            <div className="item-controls">
-              <div className="status-indicator">
-                {securityStatus.twoFactorAuth ? (
-                  <FaCheck className="enabled" />
-                ) : (
-                  <FaTimes className="disabled" />
-                )}
-              </div>
-              <button 
-                className={`toggle-btn ${securityStatus.twoFactorAuth ? 'enabled' : 'disabled'}`}
-                onClick={() => handleToggleSecurity('twoFactorAuth')}
-              >
-                {securityStatus.twoFactorAuth ? '비활성화' : '활성화'}
-              </button>
+            <div className="item-details">
+              <h4>생체 인증</h4>
+              <p>지문이나 얼굴 인식으로 빠르고 안전하게 로그인합니다</p>
             </div>
           </div>
-
-          <div className="security-item">
-            <div className="item-info">
-              <div className="item-icon">
-                <FaUserShield />
-              </div>
-              <div className="item-details">
-                <h4>생체 인증</h4>
-                <p>지문이나 얼굴 인식을 사용해 빠르고 안전하게 로그인합니다</p>
-              </div>
+          <div className="item-controls">
+            <div className="status-indicator">
+              {securityStatus.biometricAuth ? (
+                <FaCheck className="enabled" />
+              ) : (
+                <FaTimes className="disabled" />
+              )}
             </div>
-            <div className="item-controls">
-              <div className="status-indicator">
-                {securityStatus.biometricAuth ? (
-                  <FaCheck className="enabled" />
-                ) : (
-                  <FaTimes className="disabled" />
-                )}
-              </div>
-              <button 
-                className={`toggle-btn ${securityStatus.biometricAuth ? 'enabled' : 'disabled'}`}
-                onClick={() => handleToggleSecurity('biometricAuth')}
-              >
-                {securityStatus.biometricAuth ? '비활성화' : '활성화'}
-              </button>
-            </div>
-          </div>
-
-          <div className="security-item">
-            <div className="item-info">
-              <div className="item-icon">
-                <FaKey />
-              </div>
-              <div className="item-details">
-                <h4>비밀번호 변경</h4>
-                <p>정기적인 비밀번호 변경으로 보안을 강화하세요</p>
-              </div>
-            </div>
-            <div className="item-controls">
-              <div className="status-indicator">
-                {securityStatus.passwordStrong ? (
-                  <FaCheck className="enabled" />
-                ) : (
-                  <FaTimes className="disabled" />
-                )}
-              </div>
-              <button 
-                className="action-btn"
-                onClick={() => setShowPasswordChange(!showPasswordChange)}
-              >
-                변경
-              </button>
-            </div>
-          </div>
-
-          <div className="security-item">
-            <div className="item-info">
-              <div className="item-icon">
-                <FaLock />
-              </div>
-              <div className="item-details">
-                <h4>지갑 백업</h4>
-                <p>니모닉 구문을 안전한 곳에 백업하여 자산을 보호하세요</p>
-              </div>
-            </div>
-            <div className="item-controls">
-              <div className="status-indicator">
-                {securityStatus.backupComplete ? (
-                  <FaCheck className="enabled" />
-                ) : (
-                  <FaTimes className="disabled" />
-                )}
-              </div>
-              <button 
-                className="action-btn"
-                onClick={handleBackupWallet}
-                disabled={securityStatus.backupComplete}
-              >
-                {securityStatus.backupComplete ? '완료됨' : '백업'}
-              </button>
-            </div>
+            <button 
+              className={`toggle-btn ${securityStatus.biometricAuth ? 'enabled' : 'disabled'}`}
+              onClick={() => handleToggleSecurity('biometricAuth')}
+            >
+              {securityStatus.biometricAuth ? '비활성화' : '활성화'}
+            </button>
           </div>
         </div>
 
-        {/* 비밀번호 변경 폼 */}
-        {showPasswordChange && (
-          <div className="password-change-section">
-            <h3>비밀번호 변경</h3>
+        <div className="security-item">
+          <div className="item-info">
+            <div className="item-icon">
+              <FaKey />
+            </div>
+            <div className="item-details">
+              <h4>PIN 잠금</h4>
+              <p>4-6자리 PIN으로 앱을 잠금니다</p>
+            </div>
+          </div>
+          <div className="item-controls">
+            <div className="status-indicator">
+              {securityStatus.pinEnabled ? (
+                <FaCheck className="enabled" />
+              ) : (
+                <FaTimes className="disabled" />
+              )}
+            </div>
+            <button 
+              className={`toggle-btn ${securityStatus.pinEnabled ? 'enabled' : 'disabled'}`}
+              onClick={() => handleToggleSecurity('pinEnabled')}
+            >
+              {securityStatus.pinEnabled ? '변경' : '설정'}
+            </button>
+          </div>
+        </div>
+
+        <div className="security-item">
+          <div className="item-info">
+            <div className="item-icon">
+              <FaMobileAlt />
+            </div>
+            <div className="item-details">
+              <h4>패턴 잠금</h4>
+              <p>9점 패턴으로 앱을 잠금니다 (준비 중)</p>
+            </div>
+          </div>
+          <div className="item-controls">
+            <div className="status-indicator">
+              {securityStatus.patternEnabled ? (
+                <FaCheck className="enabled" />
+              ) : (
+                <FaTimes className="disabled" />
+              )}
+            </div>
+            <button 
+              className={`toggle-btn disabled`}
+              onClick={() => alert('패턴 잠금 기능은 준비 중입니다.')}
+              disabled
+            >
+              준비 중
+            </button>
+          </div>
+        </div>
+
+        <div className="security-item">
+          <div className="item-info">
+            <div className="item-icon">
+              <FaShieldAlt />
+            </div>
+            <div className="item-details">
+              <h4>지갑 백업</h4>
+              <p>지갑 데이터를 안전하게 백업합니다</p>
+            </div>
+          </div>
+          <div className="item-controls">
+            <div className="status-indicator">
+              {securityStatus.backupComplete ? (
+                <FaCheck className="enabled" />
+              ) : (
+                <FaTimes className="disabled" />
+              )}
+            </div>
+            <button 
+              className={`toggle-btn ${securityStatus.backupComplete ? 'enabled' : 'disabled'}`}
+              onClick={handleBackupWallet}
+            >
+              {securityStatus.backupComplete ? '다시 백업' : '백업'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 비밀번호 변경 */}
+      <div className="password-change-section">
+        <h3>비밀번호 변경</h3>
+        <button 
+          className="change-password-btn"
+          onClick={() => setShowPasswordChange(true)}
+        >
+          비밀번호 변경
+        </button>
+      </div>
+
+      {/* 세션 타임아웃 */}
+      <div className="session-timeout-section">
+        <h3>세션 타임아웃</h3>
+        <div className="timeout-controls">
+          <select
+            value={securityStatus.sessionTimeout}
+            onChange={(e) => setSecurityStatus(prev => ({
+              ...prev,
+              sessionTimeout: parseInt(e.target.value)
+            }))}
+          >
+            <option value={15}>15분</option>
+            <option value={30}>30분</option>
+            <option value={60}>1시간</option>
+            <option value={120}>2시간</option>
+          </select>
+          <p>자동 로그아웃 시간을 설정합니다</p>
+        </div>
+      </div>
+
+      {/* 비밀번호 변경 모달 */}
+      {showPasswordChange && (
+        <div className="modal-overlay" onClick={() => setShowPasswordChange(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>비밀번호 변경</h3>
+              <button className="close-btn" onClick={() => setShowPasswordChange(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            
             <div className="password-form">
               <div className="form-group">
                 <label>현재 비밀번호</label>
@@ -267,18 +472,17 @@ const Security: React.FC = () => {
                     type={passwordData.showCurrent ? 'text' : 'password'}
                     value={passwordData.current}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, current: e.target.value }))}
-                    placeholder="현재 비밀번호를 입력하세요"
+                    placeholder="현재 비밀번호"
                   />
-                  <button
-                    type="button"
-                    className="password-toggle"
+                  <button 
+                    className="toggle-password"
                     onClick={() => setPasswordData(prev => ({ ...prev, showCurrent: !prev.showCurrent }))}
                   >
                     {passwordData.showCurrent ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
-
+              
               <div className="form-group">
                 <label>새 비밀번호</label>
                 <div className="password-input">
@@ -286,18 +490,17 @@ const Security: React.FC = () => {
                     type={passwordData.showNew ? 'text' : 'password'}
                     value={passwordData.new}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, new: e.target.value }))}
-                    placeholder="새 비밀번호를 입력하세요"
+                    placeholder="새 비밀번호 (8자 이상)"
                   />
-                  <button
-                    type="button"
-                    className="password-toggle"
+                  <button 
+                    className="toggle-password"
                     onClick={() => setPasswordData(prev => ({ ...prev, showNew: !prev.showNew }))}
                   >
                     {passwordData.showNew ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
-
+              
               <div className="form-group">
                 <label>새 비밀번호 확인</label>
                 <div className="password-input">
@@ -305,67 +508,149 @@ const Security: React.FC = () => {
                     type={passwordData.showConfirm ? 'text' : 'password'}
                     value={passwordData.confirm}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirm: e.target.value }))}
-                    placeholder="새 비밀번호를 다시 입력하세요"
+                    placeholder="새 비밀번호 확인"
                   />
-                  <button
-                    type="button"
-                    className="password-toggle"
+                  <button 
+                    className="toggle-password"
                     onClick={() => setPasswordData(prev => ({ ...prev, showConfirm: !prev.showConfirm }))}
                   >
                     {passwordData.showConfirm ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowPasswordChange(false)}
-                >
-                  취소
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handlePasswordChange}
-                  disabled={!passwordData.current || !passwordData.new || !passwordData.confirm}
-                >
-                  변경
-                </button>
-              </div>
+              
+              <button className="submit-btn" onClick={handlePasswordChange}>
+                비밀번호 변경
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* 보안 권장사항 */}
-        <div className="security-recommendations">
-          <h3>보안 권장사항</h3>
-          <div className="recommendations-list">
-            <div className="recommendation-item">
-              <FaShieldAlt className="rec-icon" />
-              <div className="rec-content">
-                <h4>정기적인 비밀번호 변경</h4>
-                <p>3개월마다 비밀번호를 변경하여 보안을 유지하세요</p>
-              </div>
+      {/* PIN 설정/변경 모달 */}
+      {showPinModal && (
+        <div className="modal-overlay" onClick={() => setShowPinModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{securityStatus.pinEnabled ? 'PIN 변경' : 'PIN 설정'}</h3>
+              <button className="close-btn" onClick={() => setShowPinModal(false)}>
+                <FaTimes />
+              </button>
             </div>
-            <div className="recommendation-item">
-              <FaLock className="rec-icon" />
-              <div className="rec-content">
-                <h4>니모닉 구문 보관</h4>
-                <p>니모닉을 안전한 오프라인 장소에 보관하고 타인과 공유하지 마세요</p>
+            
+            <div className="pin-form">
+              {securityStatus.pinEnabled && (
+                <div className="form-group">
+                  <label>현재 PIN</label>
+                  <div className="pin-input">
+                    <input
+                      type={pinData.showCurrent ? 'text' : 'password'}
+                      value={pinData.current}
+                      onChange={(e) => setPinData(prev => ({ ...prev, current: e.target.value }))}
+                      placeholder="현재 PIN"
+                      maxLength={6}
+                    />
+                    <button 
+                      className="toggle-password"
+                      onClick={() => setPinData(prev => ({ ...prev, showCurrent: !prev.showCurrent }))}
+                    >
+                      {pinData.showCurrent ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <div className="form-group">
+                <label>새 PIN</label>
+                <div className="pin-input">
+                  <input
+                    type={pinData.showNew ? 'text' : 'password'}
+                    value={pinData.new}
+                    onChange={(e) => setPinData(prev => ({ ...prev, new: e.target.value }))}
+                    placeholder="새 PIN (4-6자리)"
+                    maxLength={6}
+                  />
+                  <button 
+                    className="toggle-password"
+                    onClick={() => setPinData(prev => ({ ...prev, showNew: !prev.showNew }))}
+                  >
+                    {pinData.showNew ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
+              
+              <div className="form-group">
+                <label>새 PIN 확인</label>
+                <div className="pin-input">
+                  <input
+                    type={pinData.showConfirm ? 'text' : 'password'}
+                    value={pinData.confirm}
+                    onChange={(e) => setPinData(prev => ({ ...prev, confirm: e.target.value }))}
+                    placeholder="새 PIN 확인"
+                    maxLength={6}
+                  />
+                  <button 
+                    className="toggle-password"
+                    onClick={() => setPinData(prev => ({ ...prev, showConfirm: !prev.showConfirm }))}
+                  >
+                    {pinData.showConfirm ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+              
+              <button className="submit-btn" onClick={handlePinChange}>
+                {securityStatus.pinEnabled ? 'PIN 변경' : 'PIN 설정'}
+              </button>
             </div>
-            <div className="recommendation-item">
-              <FaUserShield className="rec-icon" />
-              <div className="rec-content">
-                <h4>의심스러운 활동 확인</h4>
-                <p>알 수 없는 거래나 로그인 시도가 있는지 정기적으로 확인하세요</p>
+          </div>
+        </div>
+      )}
+
+      {/* 백업 모달 */}
+      {showBackupModal && backupData && (
+        <div className="modal-overlay" onClick={() => setShowBackupModal(false)}>
+          <div className="modal-content backup-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>지갑 백업</h3>
+              <button className="close-btn" onClick={() => setShowBackupModal(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="backup-content">
+              <div className="backup-warning">
+                <FaLock />
+                <h4>⚠️ 중요: 백업 파일을 안전한 곳에 보관하세요</h4>
+                <p>이 파일에는 지갑 복구에 필요한 모든 정보가 포함되어 있습니다.</p>
+              </div>
+              
+              <div className="backup-info">
+                <div className="backup-item">
+                  <span>백업 날짜:</span>
+                  <span>{new Date(backupData.createdAt).toLocaleString('ko-KR')}</span>
+                </div>
+                <div className="backup-item">
+                  <span>지갑 주소:</span>
+                  <span>{backupData.walletAddresses.length}개</span>
+                </div>
+                <div className="backup-item">
+                  <span>백업 버전:</span>
+                  <span>{backupData.version}</span>
+                </div>
+              </div>
+              
+              <div className="backup-actions">
+                <button className="download-btn" onClick={downloadBackup}>
+                  <FaDownload /> 백업 파일 다운로드
+                </button>
+                <button className="close-btn" onClick={() => setShowBackupModal(false)}>
+                  완료
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

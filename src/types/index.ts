@@ -5,6 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   avatar?: string;
+  profilePhoto?: string;
   createdAt: string;
   updatedAt: string;
   isAdmin?: boolean;

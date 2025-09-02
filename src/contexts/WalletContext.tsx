@@ -9,6 +9,7 @@ interface WalletContextType {
   restoreWallet: (mnemonic: string) => Promise<void>;
   selectAccount: (index: number) => void;
   addAccount: () => Promise<void>;
+  sendTransaction: (to: string, amount: string, coin: string) => Promise<string>;
   clearWallet: () => void;
 }
 
@@ -86,6 +87,31 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     setWallet(updatedWallet);
   };
 
+  const sendTransaction = async (to: string, amount: string, coin: string): Promise<string> => {
+    if (!currentAccount) {
+      throw new Error('지갑이 설정되지 않았습니다.');
+    }
+    
+    // 실제로는 여기서 블록체인 트랜잭션을 전송해야 함
+    // 현재는 모의 트랜잭션 해시를 반환
+    const mockTxHash = '0x' + Math.random().toString(16).substr(2, 64);
+    
+    // 로컬 스토리지에 트랜잭션 기록 저장
+    const transactions = JSON.parse(localStorage.getItem('yoy_transactions') || '[]');
+    transactions.push({
+      from: currentAccount.address,
+      to,
+      amount,
+      coin,
+      txHash: mockTxHash,
+      timestamp: new Date().toISOString(),
+      status: 'completed'
+    });
+    localStorage.setItem('yoy_transactions', JSON.stringify(transactions));
+    
+    return mockTxHash;
+  };
+
   const clearWallet = () => {
     setWallet(null);
     setCurrentAccount(null);
@@ -101,6 +127,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     restoreWallet,
     selectAccount,
     addAccount,
+    sendTransaction,
     clearWallet,
   };
 

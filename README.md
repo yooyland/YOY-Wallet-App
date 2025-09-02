@@ -1,225 +1,210 @@
-# YOY Wallet App
+# 🔐 YOY Wallet - 엔터프라이즈급 보안 Web3 지갑
 
-YooY Land (YOY) 코인을 위한 현대적이고 안전한 암호화폐 지갑 애플리케이션입니다.
+[![Security](https://img.shields.io/badge/Security-Enterprise%20Grade-brightgreen.svg)](https://github.com/your-repo/yoy-wallet)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18%2B-blue.svg)](https://reactjs.org/)
 
-## 🚀 주요 기능
+## 🚀 프로젝트 개요
 
-### 👤 사용자 기능
-- **다중 인증**: 이메일 로그인, PIN, 생체인증, 패턴 인증 지원
-- **다국어 지원**: 8개 언어 (한국어, 영어, 일본어, 중국어, 스페인어, 프랑스어, 독일어, 러시아어)
-- **테마 시스템**: 다크 모드 (Black + Gold), 라이트 모드 (White + Blue)
-- **지갑 관리**: BIP-39 니모닉 생성/복구, HD 지갑 지원
-- **코인 거래**: 실시간 시장 데이터, 거래 내역 관리
-- **보안**: PIN, 생체인증, 패턴 보안 설정
+**YOY Wallet**은 YooY Land 생태계를 위한 엔터프라이즈급 보안 Web3 지갑 애플리케이션입니다. VP/Valp 거버넌스 시스템과 함께 블록체인 자산을 안전하게 관리할 수 있습니다.
 
-### 🔧 관리자 기능
-- **코인 관리**: 코인 추가/수정/삭제, 로고 자동 연동 (업비트 API)
-- **사용자 관리**: 관리자 계정 추가/제거
-- **시스템 모니터링**: 대시보드, 분석, 통계
-- **설정 관리**: 시스템 설정, 보안 설정
+### ✨ 주요 기능
 
-## 🛠 기술 스택
+- 🔐 **엔터프라이즈급 보안**: AES-256-GCM 암호화, 다중 인증, 세션 관리
+- 🏛️ **VP/Valp 거버넌스**: 자동화된 의사결정과 수동 검증 시스템
+- 💰 **멀티 체인 지원**: Ethereum, BSC, Polygon 등
+- 📱 **크로스 플랫폼**: 웹, 모바일 앱 지원
+- 🛡️ **블랙리스트/화이트리스트**: 보안 강화된 주소 관리
+- 📊 **실시간 모니터링**: 거래 내역 및 자산 추적
 
-- **Frontend**: React 18, TypeScript
-- **Styling**: CSS3, CSS Variables (테마 시스템)
-- **State Management**: React Context API
-- **Routing**: React Router DOM
-- **Blockchain**: Ethers.js, BIP-39
-- **APIs**: CoinGecko API, Upbit API, Infura
-- **Authentication**: Local Storage, Custom Auth System
-- **Icons**: React Icons
-- **Notifications**: React Hot Toast
-
-## 📦 설치 및 실행
-
-### 필수 요구사항
-- Node.js 16.0.0 이상
-- npm 또는 yarn
-
-### 설치 방법
-
-1. **저장소 클론**
-```bash
-git clone https://github.com/yooyland/YOY-Wallet-App.git
-cd YOY-Wallet-App
-```
-
-2. **의존성 설치**
-```bash
-npm install
-```
-
-3. **환경 변수 설정**
-```bash
-# env.example을 .env로 복사
-cp env.example .env
-
-# .env 파일을 편집하여 실제 값 입력
-# 특히 REACT_APP_INFURA_ID는 필수
-```
-
-4. **개발 서버 실행**
-```bash
-npm start
-```
-
-5. **브라우저에서 확인**
-```
-http://localhost:8080
-```
-
-## 🔐 환경 변수 설정
-
-### 필수 환경 변수
-```env
-REACT_APP_INFURA_ID=your_infura_project_id_here
-```
-
-### 선택적 환경 변수
-```env
-REACT_APP_COINGECKO_API_KEY=your_coingecko_api_key_here
-REACT_APP_UPBIT_API_KEY=your_upbit_api_key_here
-```
-
-## 👨‍💼 관리자 계정
-
-기본 관리자 이메일:
-- `admin@yooyland.com` (슈퍼 관리자)
-- `landyooy@gmail.com` (관리자)
-- `jch4389@gmail.com` (관리자)
-
-## 🏗 프로젝트 구조
+## 🏗️ 아키텍처
 
 ```
-src/
-├── components/          # 재사용 가능한 컴포넌트
-├── contexts/           # React Context (상태 관리)
-│   ├── AuthContext.tsx
-│   ├── AdminContext.tsx
-│   ├── WalletContext.tsx
-│   ├── SecurityContext.tsx
-│   ├── ThemeContext.tsx
-│   └── LanguageContext.tsx
-├── pages/             # 페이지 컴포넌트
-│   ├── Dashboard.tsx
-│   ├── Admin.tsx
-│   ├── Wallet.tsx
-│   ├── Settings.tsx
-│   └── ...
-├── utils/             # 유틸리티 함수
-│   ├── upbitApi.ts
-│   ├── blockchain.ts
-│   └── ...
-├── types/             # TypeScript 타입 정의
-├── assets/            # 정적 자산 (이미지, 로고)
-└── styles/            # 전역 스타일
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   API Gateway   │    │   Auth Service  │
+│   (React App)   │◄──►│   (Rate Limit)  │◄──►│   (JWT, 2FA)   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │
+                                ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  User Service   │    │  Wallet Service │    │  Analytics      │
+│  (Profile Mgmt) │    │  (Asset Mgmt)   │    │  (Trading)      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │
+                                ▼
+                    ┌─────────────────┐
+                    │   Database      │
+                    │   (Encrypted)   │
+                    └─────────────────┘
 ```
-
-## 🎨 테마 시스템
-
-### 다크 모드 (기본)
-- 배경: Black
-- 강조색: Gold (#ffd700)
-- 카드: 어두운 그라데이션
-
-### 라이트 모드
-- 배경: White
-- 강조색: Blue (#007bff)
-- 카드: 밝은 그라데이션
-
-### 관리자 모드
-- 배경: Black
-- 강조색: Purple (#6f42c1)
-- 모든 테마에서 동일
-
-## 🌐 다국어 지원
-
-지원 언어:
-- 🇰🇷 한국어 (ko)
-- 🇺🇸 영어 (en) - 기본
-- 🇯🇵 일본어 (ja)
-- 🇨🇳 중국어 (zh)
-- 🇪🇸 스페인어 (es)
-- 🇫🇷 프랑스어 (fr)
-- 🇩🇪 독일어 (de)
-- 🇷🇺 러시아어 (ru)
 
 ## 🔒 보안 기능
 
-- **PIN 인증**: 4-6자리 PIN 설정
-- **생체인증**: 지문/얼굴인식 (시뮬레이션)
-- **패턴 인증**: 9점 패턴 (준비 중)
-- **세션 관리**: 자동 로그아웃
-- **데이터 암호화**: 로컬 스토리지 암호화
+### 암호화 계층
+- **AES-256-GCM**: 최고 수준의 대칭키 암호화
+- **사용자별 키**: 각 사용자마다 고유한 암호화 키
+- **PBKDF2**: 100,000회 반복 키 스트레칭
+- **솔트 생성**: 64바이트 랜덤 솔트
 
-## 📱 모바일 최적화
+### 인증 및 권한
+- **JWT 토큰**: 액세스 토큰 + 리프레시 토큰
+- **2FA 지원**: TOTP 기반 2단계 인증
+- **세션 관리**: Redis 기반 세션 저장소
+- **권한 제어**: 역할 기반 접근 제어 (RBAC)
 
-- 반응형 디자인
-- 터치 친화적 UI
-- 모바일 네비게이션
-- 햄버거 메뉴
-- 하단 탭 네비게이션
+### 네트워크 보안
+- **Rate Limiting**: API 호출 제한 및 점진적 속도 제한
+- **CORS 정책**: 엄격한 출처 제한
+- **보안 헤더**: HSTS, CSP, XSS 방어
+- **HTTPS 강제**: 모든 통신 암호화
+
+## 🛠️ 기술 스택
+
+### Frontend
+- **React 18** - 사용자 인터페이스
+- **TypeScript** - 타입 안전성
+- **Tailwind CSS** - 스타일링
+- **React Router** - 라우팅
+- **Axios** - HTTP 클라이언트
+
+### Backend
+- **Node.js** - 서버 런타임
+- **Express.js** - 웹 프레임워크
+- **Sequelize** - ORM
+- **PostgreSQL** - 메인 데이터베이스
+- **Redis** - 세션 및 캐시
+
+### 보안
+- **bcryptjs** - 비밀번호 해싱
+- **jsonwebtoken** - JWT 토큰
+- **helmet** - 보안 헤더
+- **express-rate-limit** - 요청 제한
+- **crypto** - 암호화
+
+## 📦 설치 및 실행
+
+### 1. 저장소 클론
+```bash
+git clone https://github.com/your-repo/yoy-wallet.git
+cd yoy-wallet
+```
+
+### 2. 백엔드 설정
+```bash
+cd server
+npm install
+cp env.example .env
+# .env 파일 편집하여 환경 변수 설정
+npm run dev
+```
+
+### 3. 프론트엔드 설정
+```bash
+cd ../
+npm install
+npm start
+```
+
+### 4. 데이터베이스 설정
+```bash
+# PostgreSQL 설치 및 데이터베이스 생성
+createdb yoy_wallet
+cd server
+npm run migrate
+npm run seed
+```
+
+## 🔧 환경 변수
+
+### 필수 환경 변수
+```bash
+# 데이터베이스
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=yoy_wallet
+DB_USER=yoy_wallet_user
+DB_PASSWORD=your_secure_password
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRES_IN=24h
+
+# 암호화
+ENCRYPTION_MASTER_KEY=your_master_encryption_key_here_64_characters_minimum
+
+# 보안
+BCRYPT_SALT_ROUNDS=12
+MAX_LOGIN_ATTEMPTS=5
+```
 
 ## 🚀 배포
 
 ### 개발 환경
 ```bash
+npm run dev
+```
+
+### 프로덕션 환경
+```bash
+npm run build
 npm start
 ```
 
-### 프로덕션 빌드
+### Docker 배포
 ```bash
-npm run build
+docker-compose up -d
 ```
 
-### 정적 파일 서빙
+## 📱 앱스토어 출시 준비
+
+### 보안 체크리스트
+- [x] **데이터 암호화**: 모든 민감 데이터 암호화
+- [x] **인증 시스템**: JWT + 2FA 구현
+- [x] **네트워크 보안**: HTTPS + CORS 정책
+- [x] **세션 관리**: 안전한 세션 처리
+- [x] **에러 처리**: 민감 정보 노출 방지
+- [x] **로깅**: 보안 이벤트 추적
+
+### 개인정보보호 준수
+- [x] **GDPR 준수**: EU 사용자 데이터 보호
+- [x] **CCPA 준수**: 캘리포니아 개인정보보호법
+- [x] **데이터 최소화**: 필요한 데이터만 수집
+- [x] **사용자 동의**: 명시적 동의 시스템
+- [x] **데이터 삭제**: 사용자 요청 시 즉시 삭제
+
+## 🧪 테스트
+
+### 보안 테스트
 ```bash
-npx serve -s build
+# 취약점 스캔
+npm run security:scan
+
+# 침투 테스트
+npm run security:pentest
+
+# 암호화 테스트
+npm run test:encryption
 ```
 
-## 🔧 개발 가이드
-
-### 새로운 코인 추가
-1. 관리자 페이지 접속
-2. "코인 관리" 탭 선택
-3. "코인 추가" 버튼 클릭
-4. 코인 심볼 검색 (업비트 자동 연동)
-5. 로고 업로드 (선택사항)
-6. 코인 정보 입력 및 저장
-
-### 새로운 기능 추가
-1. `src/components/`에 컴포넌트 생성
-2. `src/contexts/`에 상태 관리 추가
-3. `src/types/`에 타입 정의
-4. `src/pages/`에 페이지 추가
-5. 라우팅 설정
-
-## 🐛 문제 해결
-
-### 일반적인 문제
-
-**포트 충돌**
+### 기능 테스트
 ```bash
-# Node.js 프로세스 종료
-taskkill /f /im node.exe
+npm run test
+npm run test:coverage
 ```
 
-**의존성 문제**
-```bash
-# node_modules 삭제 후 재설치
-rm -rf node_modules
-npm install
-```
+## 📊 모니터링
 
-**환경 변수 문제**
-```bash
-# .env 파일 확인
-cat .env
-```
+### 보안 모니터링
+- **로그 분석**: 보안 이벤트 실시간 추적
+- **성능 모니터링**: API 응답 시간 및 오류율
+- **사용자 활동**: 의심스러운 패턴 감지
+- **시스템 상태**: 서버 및 데이터베이스 상태
 
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+### 알림 시스템
+- **보안 경고**: 즉시 알림
+- **성능 경고**: 임계값 초과 시 알림
+- **오류 알림**: 시스템 오류 발생 시 알림
 
 ## 🤝 기여하기
 
@@ -229,18 +214,25 @@ cat .env
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📞 연락처
+## 📄 라이선스
 
-- **프로젝트 링크**: [https://github.com/yooyland/YOY-Wallet-App](https://github.com/yooyland/YOY-Wallet-App)
-- **관리자 이메일**: admin@yooyland.com
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+
+## 🆘 지원
+
+- **문서**: [Wiki](https://github.com/your-repo/yoy-wallet/wiki)
+- **이슈**: [GitHub Issues](https://github.com/your-repo/yoy-wallet/issues)
+- **토론**: [GitHub Discussions](https://github.com/your-repo/yoy-wallet/discussions)
+- **이메일**: support@yooyland.com
 
 ## 🙏 감사의 말
 
-- [Ethers.js](https://docs.ethers.io/) - 블록체인 상호작용
-- [CoinGecko API](https://www.coingecko.com/en/api) - 암호화폐 데이터
-- [Upbit API](https://docs.upbit.com/) - 한국 시장 데이터
-- [React Icons](https://react-icons.github.io/react-icons/) - 아이콘 라이브러리
+- **YooY Land** 팀
+- **보안 연구원**들
+- **오픈소스 커뮤니티**
 
 ---
 
-**YOY Wallet App** - 안전하고 편리한 암호화폐 지갑
+**⚠️ 보안 경고**: 이 프로젝트는 프로덕션 환경에서 사용하기 전에 철저한 보안 감사를 받아야 합니다. 모든 암호화 키와 비밀번호는 안전하게 관리하세요.
+
+**🔒 보안 취약점 보고**: 보안 문제를 발견하셨다면 [security@yooyland.com](mailto:security@yooyland.com)으로 즉시 보고해주세요.

@@ -1,0 +1,336 @@
+/* Black & Gold 테마 */
+.customer-support-page {
+  --bg-color: #1a1a1a;
+  --card-bg: #2d2d2d;
+  --border-color: #404040;
+  --text-color: #ffffff;
+  --text-muted: #b0b0b0;
+  --hover-color: #404040;
+  --input-bg: #404040;
+  --primary-color: #ffd700;
+  --primary-hover: #e6c200;
+}
+
+.customer-support-page {
+  padding: 30px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+/* 페이지 헤더 */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  margin: 0 0 10px 0;
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* 탭 네비게이션 */
+.tab-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 15px 30px;
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.tab-button:hover {
+  border-color: var(--primary-color);
+  background: var(--hover-color);
+  transform: translateY(-3px);
+}
+
+.tab-button.active {
+  background: var(--primary-color);
+  color: #333333;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* 탭 콘텐츠 */
+.tab-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 문의 섹션 */
+.contact-section h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.contact-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.contact-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.contact-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.contact-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333333;
+  font-size: 32px;
+  margin: 0 auto 20px;
+}
+
+.contact-info h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+.contact-description {
+  color: var(--text-muted);
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.contact-detail {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.contact-hours {
+  color: var(--text-muted);
+  font-size: 12px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.contact-button {
+  background: var(--primary-color);
+  color: #333333;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  width: 100%;
+  max-width: 200px;
+}
+
+.contact-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+/* FAQ 섹션 */
+.faq-section h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq-item {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+}
+
+.faq-item:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question {
+  margin: 0 0 15px 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.faq-answer {
+  margin: 0;
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* 가이드 섹션 */
+.guide-section h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.guide-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.guide-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.guide-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.guide-icon {
+  width: 70px;
+  height: 70px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333333;
+  font-size: 28px;
+  margin: 0 auto 20px;
+}
+
+.guide-info h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.guide-info p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.guide-button {
+  background: var(--primary-color);
+  color: #333333;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  width: 100%;
+  max-width: 150px;
+}
+
+.guide-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .customer-support-page {
+    padding: 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .tab-navigation {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .tab-button {
+    min-width: 200px;
+  }
+  
+  .contact-methods {
+    grid-template-columns: 1fr;
+  }
+  
+  .guide-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-support-page {
+    padding: 15px;
+  }
+  
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .contact-card,
+  .guide-card {
+    padding: 20px;
+  }
+  
+  .contact-icon,
+  .guide-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+}

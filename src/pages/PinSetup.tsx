@@ -48,7 +48,8 @@ const PinSetup: React.FC = () => {
       if (isBiometricAvailable()) {
         setStep('biometric');
       } else {
-        navigate('/dashboard');
+        // 생체인증을 사용할 수 없는 경우 바로 대시보드로 이동
+        navigate('/', { replace: true });
       }
     } catch (error) {
       toast.error('PIN 설정에 실패했습니다.');
@@ -62,17 +63,17 @@ const PinSetup: React.FC = () => {
     try {
       await enableBiometric();
       toast.success('생체인증이 활성화되었습니다.');
-      navigate('/dashboard');
+      navigate('/', { replace: true });
     } catch (error) {
       toast.error('생체인증 설정에 실패했습니다.');
-      navigate('/dashboard');
+      navigate('/', { replace: true });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSkipBiometric = () => {
-    navigate('/dashboard');
+    navigate('/', { replace: true });
   };
 
   const renderPinInput = (value: string, onChange: (value: string) => void, placeholder: string) => (

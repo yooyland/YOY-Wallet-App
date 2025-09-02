@@ -159,6 +159,105 @@
   text-decoration: underline;
 }
 
+/* 보안 옵션 스타일 */
+.security-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.security-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.security-option:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  color: var(--bg-primary);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+}
+
+.option-content h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.option-content p {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 이메일 인증 스타일 */
+.verification-info {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+}
+
+.verification-info .email {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.verification-code-input {
+  text-align: center;
+  font-size: 1.25rem;
+  letter-spacing: 0.5em;
+  font-weight: 600;
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .security-option {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .option-icon {
+    align-self: center;
+  }
+  
+  .option-content .btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
   .auth-card {
     padding: 30px 20px;

@@ -103,14 +103,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let mockUser: User;
       
       if (existingUser) {
-        // 기존 사용자 정보 복원
+        // 기존 사용자 정보 확인
         const parsedUser = JSON.parse(existingUser);
-        mockUser = {
-          ...parsedUser,
-          email: credentials.email, // 이메일만 업데이트
-          updatedAt: new Date().toISOString(),
-          isAdmin: isAdmin, // 관리자 권한 추가
-        };
+        
+        // 이메일이 다르면 새로운 사용자로 처리
+        if (parsedUser.email !== credentials.email) {
+          // 기존 사용자 정보 삭제
+          localStorage.removeItem('yoy_wallet_user');
+          localStorage.removeItem('profile_photo');
+          
+          // 새로운 사용자 생성
+          const randomNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+          const username = `YoY${randomNumber}`;
+          
+          mockUser = {
+            id: username,
+            email: credentials.email,
+            username: username,
+            firstName: '사용자',
+            lastName: '이름',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isAdmin: isAdmin,
+          };
+        } else {
+          // 같은 이메일이면 기존 사용자 정보 사용
+          mockUser = {
+            ...parsedUser,
+            updatedAt: new Date().toISOString(),
+            isAdmin: isAdmin,
+          };
+        }
       } else {
         // 새로운 사용자 생성
         const randomNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
@@ -124,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           lastName: '이름',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          isAdmin: isAdmin, // 관리자 권한 추가
+          isAdmin: isAdmin,
         };
       }
       
@@ -134,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 관리자가 아닌 경우에만 보안 설정 확인
       if (!isAdmin) {
         // 보안 설정이 있고, 실제로 활성화되어 있을 때만 PIN 인증 페이지로 이동
-        const securitySettings = localStorage.getItem('yoy_wallet_security');
+        const securitySettings = localStorage.getItem('securitySettings');
         if (securitySettings) {
           const settings = JSON.parse(securitySettings);
           // 실제로 PIN이나 생체인증이 활성화되어 있을 때만 추가 인증 요구
@@ -182,9 +205,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    // 사용자 정보는 유지하고 인증 상태만 초기화
-    // localStorage.removeItem('yoy_wallet_user'); // 주석 처리 - 사용자 정보 유지
-    // localStorage.removeItem('profile_photo'); // 주석 처리 - 프로필 사진 유지
+    // 사용자 정보와 프로필 사진 완전 삭제
+    localStorage.removeItem('yoy_wallet_user');
+    localStorage.removeItem('profile_photo');
+    sessionStorage.removeItem('profile_photo');
     dispatch({ type: 'LOGOUT' });
   };
 

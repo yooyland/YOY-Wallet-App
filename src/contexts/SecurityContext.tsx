@@ -62,7 +62,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     // 로컬 스토리지에서 보안 설정 복원
-    const savedSettings = localStorage.getItem('yoy_wallet_security');
+    const savedSettings = localStorage.getItem('securitySettings');
     if (savedSettings) {
       try {
         const settings = JSON.parse(savedSettings);
@@ -80,11 +80,17 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         throw new Error('PIN은 4-6자리 숫자여야 합니다.');
       }
 
+      // PIN 설정 후 pinEnabled를 true로 설정
+      const updatedSettings = { 
+        ...securitySettings, 
+        pinEnabled: true, 
+        pin 
+      };
+      
       dispatch({ type: 'SETUP_PIN', payload: pin });
       
       // 로컬 스토리지에 저장
-      const updatedSettings = { ...securitySettings, pinEnabled: true, pin };
-      localStorage.setItem('yoy_wallet_security', JSON.stringify(updatedSettings));
+      localStorage.setItem('securitySettings', JSON.stringify(updatedSettings));
       
       console.log('PIN 설정 완료');
     } catch (error) {
@@ -103,7 +109,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         pinEnabled: false, 
         pin: undefined 
       };
-      localStorage.setItem('yoy_wallet_security', JSON.stringify(updatedSettings));
+      localStorage.setItem('securitySettings', JSON.stringify(updatedSettings));
       
       console.log('PIN 비활성화 완료');
     } catch (error) {
@@ -133,7 +139,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       // 로컬 스토리지에 저장
       const updatedSettings = { ...securitySettings, biometricEnabled: true };
-      localStorage.setItem('yoy_wallet_security', JSON.stringify(updatedSettings));
+      localStorage.setItem('securitySettings', JSON.stringify(updatedSettings));
       
       console.log('생체인증 활성화 완료');
     } catch (error) {
@@ -148,7 +154,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       // 로컬 스토리지에 저장
       const updatedSettings = { ...securitySettings, biometricEnabled: false };
-      localStorage.setItem('yoy_wallet_security', JSON.stringify(updatedSettings));
+      localStorage.setItem('securitySettings', JSON.stringify(updatedSettings));
       
       console.log('생체인증 비활성화 완료');
     } catch (error) {

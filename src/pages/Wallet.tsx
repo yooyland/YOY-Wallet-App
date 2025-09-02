@@ -1,573 +1,367 @@
-import React, { useState, useEffect } from 'react';
-import { FaPlus, FaQrcode, FaCopy, FaPaperPlane, FaKey, FaWallet, FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
-import { Coin } from '../types';
-import { useWallet } from '../contexts/WalletContext';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useAdmin } from '../contexts/AdminContext';
+import React, { useState } from 'react';
+import { FaWallet, FaPlus, FaDownload, FaUpload, FaKey, FaShieldAlt, FaQrcode, FaCoins } from 'react-icons/fa';
 import './Wallet.css';
 
-interface CoinWallet {
-  coinId: string;
-  coinSymbol: string;
-  coinName: string;
-  address: string;
-  privateKey: string;
-  balance: string;
-  network: string;
-}
-
 const Wallet: React.FC = () => {
-  const { wallet, currentAccount, isWalletSetup, createWallet, restoreWallet, selectAccount, addAccount } = useWallet();
-  const { t } = useLanguage();
-  const { adminCoins } = useAdmin();
-  const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
-  const [showSendModal, setShowSendModal] = useState(false);
-  const [showReceiveModal, setShowReceiveModal] = useState(false);
-  const [showWalletSetup, setShowWalletSetup] = useState(!isWalletSetup);
-  const [showCreateWallet, setShowCreateWallet] = useState(false);
-  const [showRestoreWallet, setShowRestoreWallet] = useState(false);
-  const [mnemonic, setMnemonic] = useState('');
-  const [restoreMnemonic, setRestoreMnemonic] = useState('');
-  const [sendAmount, setSendAmount] = useState('');
-  const [sendToAddress, setSendToAddress] = useState('');
-  const [sendLoading, setSendLoading] = useState(false);
-  const [showMnemonic, setShowMnemonic] = useState(false);
-  const [coinWallets, setCoinWallets] = useState<CoinWallet[]>([]);
-  const [walletCreated, setWalletCreated] = useState(false);
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'recover' | 'deposit' | 'withdraw'>('overview');
+  const [walletName, setWalletName] = useState('');
+  const [seedPhrase, setSeedPhrase] = useState('');
+  const [depositAmount, setDepositAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [selectedCoin, setSelectedCoin] = useState('YOY');
 
-  // 관리자가 추가한 활성 코인들을 사용
-  const availableCoins: Coin[] = adminCoins
-    .filter(coin => coin.isActive)
-    .map(adminCoin => ({
-      id: adminCoin.id,
-      symbol: adminCoin.symbol,
-      name: adminCoin.name,
-      balance: Math.random() * 1000, // 실제로는 지갑에서 가져와야 함
-      price: Math.random() * 1000, // 실제로는 API에서 가져와야 함
-      change24h: (Math.random() - 0.5) * 20, // 실제로는 API에서 가져와야 함
-      icon: adminCoin.symbol.charAt(0),
-    }));
-
-  // 기본 코인들 (관리자가 추가한 코인이 없을 때)
-  const defaultCoins: Coin[] = [
+  const mockWallets = [
     {
-      id: 'yoy',
-      symbol: 'YOY',
-      name: 'YooY Land',
-      balance: 1000,
-      price: 0.1,
-      change24h: 5.8,
-      icon: 'Y',
+      id: '1',
+      name: '메인 지갑',
+      address: '0x1234567890abcdef1234567890abcdef12345678',
+      balance: '1,250.50 YOY',
+      network: 'Ethereum',
+      isActive: true
     },
+    {
+      id: '2',
+      name: '거래용 지갑',
+      address: '0xabcdef1234567890abcdef1234567890abcdef12',
+      balance: '500.00 YOY',
+      network: 'Ethereum',
+      isActive: true
+    }
   ];
 
-  const coins = availableCoins.length > 0 ? availableCoins : defaultCoins;
-
-  const walletAddress = currentAccount?.address || '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6';
-
-  // 지갑 생성 시 코인별 주소 생성
-  const generateCoinWallets = async (baseMnemonic: string) => {
-    const { ethers } = await import('ethers');
-    
-    const hdNode = ethers.HDNodeWallet.fromPhrase(baseMnemonic);
-    const newCoinWallets: CoinWallet[] = [];
-
-    // 각 코인별로 다른 경로를 사용하여 주소 생성
-    coins.forEach((coin, index) => {
-      const derivationPath = `m/44'/60'/0'/0/${index}`; // BIP-44 표준
-      const account = hdNode.derivePath(derivationPath);
-      
-      newCoinWallets.push({
-        coinId: coin.id,
-        coinSymbol: coin.symbol,
-        coinName: coin.name,
-        address: account.address,
-        privateKey: account.privateKey,
-        balance: '0.00',
-        network: coin.symbol === 'YOY' ? 'Ethereum Mainnet' : 'Ethereum Mainnet'
-      });
-    });
-
-    setCoinWallets(newCoinWallets);
-    setWalletCreated(true);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  const copyAddress = (address: string) => {
-    navigator.clipboard.writeText(address);
-    setCopiedAddress(address);
-    setTimeout(() => setCopiedAddress(null), 2000);
-  };
-
-  const handleSend = (coin: Coin) => {
-    setSelectedCoin(coin);
-    setShowSendModal(true);
-  };
-
-  const handleReceive = (coin: Coin) => {
-    setSelectedCoin(coin);
-    setShowReceiveModal(true);
-  };
-
-  const handleCreateWallet = async () => {
-    try {
-      const newMnemonic = await createWallet();
-      setMnemonic(newMnemonic);
-      await generateCoinWallets(newMnemonic);
-      setShowCreateWallet(false);
-      setShowWalletSetup(false);
-    } catch (error) {
-      console.error('지갑 생성 실패:', error);
+  const handleCreateWallet = () => {
+    if (walletName.trim()) {
+      // 지갑 생성 로직 구현
+      console.log('지갑 생성:', walletName);
+      setWalletName('');
+      setActiveTab('overview');
     }
   };
 
-  const handleRestoreWallet = async () => {
-    try {
-      await restoreWallet(restoreMnemonic);
-      await generateCoinWallets(restoreMnemonic);
-      setShowRestoreWallet(false);
-      setShowWalletSetup(false);
-    } catch (error) {
-      console.error('지갑 복구 실패:', error);
+  const handleRecoverWallet = () => {
+    if (seedPhrase.trim()) {
+      // 지갑 복구 로직 구현
+      console.log('지갑 복구:', seedPhrase);
+      setSeedPhrase('');
+      setActiveTab('overview');
     }
   };
 
-  const handleAddAccount = async () => {
-    try {
-      await addAccount();
-    } catch (error) {
-      console.error('계정 추가 실패:', error);
+  const handleDeposit = () => {
+    if (depositAmount && selectedCoin) {
+      // 입금 로직 구현
+      console.log('입금:', depositAmount, selectedCoin);
+      setDepositAmount('');
     }
   };
 
-  const handleSendTransaction = async () => {
-    if (!currentAccount || !selectedCoin) return;
-    
-    try {
-      setSendLoading(true);
-      
-      // 실제 전송 로직 구현
-      // const INFURA_ID = process.env.REACT_APP_INFURA_ID;
-      // const rpc = `https://mainnet.infura.io/v3/${INFURA_ID}`;
-      // const signer = createSigner(currentAccount.privateKey, rpc);
-      // const tx = await sendToken(signer, selectedCoin.contract, sendToAddress, sendAmount);
-      
-      alert('전송 기능은 개발 중입니다. 실제 전송을 위해서는 추가 보안 설정이 필요합니다.');
-      
-      setShowSendModal(false);
-      setSendAmount('');
-      setSendToAddress('');
-    } catch (error) {
-      console.error('전송 실패:', error);
-      alert('전송에 실패했습니다.');
-    } finally {
-      setSendLoading(false);
+  const handleWithdraw = () => {
+    if (withdrawAmount && selectedCoin) {
+      // 출금 로직 구현
+      console.log('출금:', withdrawAmount, selectedCoin);
+      setWithdrawAmount('');
     }
   };
 
-  // 지갑이 이미 생성되어 있는지 확인
-  useEffect(() => {
-    if (isWalletSetup && wallet?.mnemonic) {
-      generateCoinWallets(wallet.mnemonic);
-    }
-  }, [isWalletSetup, wallet]);
-
-  return (
-    <div className="wallet">
-      <div className="wallet-header">
-        <h1>{t('wallet.title')}</h1>
-        <p>{t('wallet.description')}</p>
+  const renderOverview = () => (
+    <div className="overview-section">
+      <div className="wallets-summary">
+        <h3>내 지갑 요약</h3>
+        <div className="summary-cards">
+          <div className="summary-card">
+            <div className="card-icon">
+              <FaWallet />
+            </div>
+            <div className="card-content">
+              <h4>전체 지갑</h4>
+              <span className="card-value">{mockWallets.length}개</span>
+            </div>
+          </div>
+          <div className="summary-card">
+            <div className="card-icon">
+              <FaCoins />
+            </div>
+            <div className="card-content">
+              <h4>총 잔액</h4>
+              <span className="card-value">1,750.50 YOY</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 지갑 설정이 안된 경우 */}
-      {showWalletSetup && (
-        <div className="wallet-setup">
-          <div className="setup-card">
-            <h2>{t('wallet.setup.title')}</h2>
-            <p>{t('wallet.setup.description')}</p>
-            <div className="setup-actions">
-              <button 
-                className="btn btn-primary"
-                onClick={() => setShowCreateWallet(true)}
-              >
-                <FaWallet />
-                {t('wallet.setup.create')}
-              </button>
-              <button 
-                className="btn btn-secondary"
-                onClick={() => setShowRestoreWallet(true)}
-              >
-                <FaKey />
-                {t('wallet.setup.restore')}
-              </button>
+      <div className="wallets-list">
+        <h3>지갑 목록</h3>
+        {mockWallets.map(wallet => (
+          <div key={wallet.id} className="wallet-item">
+            <div className="wallet-info">
+              <h4>{wallet.name}</h4>
+              <p className="wallet-address">{wallet.address}</p>
+              <p className="wallet-network">{wallet.network}</p>
+            </div>
+            <div className="wallet-balance">
+              <span className="balance-amount">{wallet.balance}</span>
+              <span className={`status-badge ${wallet.isActive ? 'active' : 'inactive'}`}>
+                {wallet.isActive ? '활성' : '비활성'}
+              </span>
             </div>
           </div>
+        ))}
+      </div>
+
+      <div className="quick-actions">
+        <h3>빠른 액션</h3>
+        <div className="action-buttons">
+          <button 
+            className="action-button primary"
+            onClick={() => setActiveTab('create')}
+          >
+            <FaPlus />
+            새 지갑 생성
+          </button>
+          <button 
+            className="action-button secondary"
+            onClick={() => setActiveTab('recover')}
+          >
+            <FaDownload />
+            지갑 복구
+          </button>
         </div>
-      )}
+      </div>
+    </div>
+  );
 
-      {/* 지갑 생성 모달 */}
-      {showCreateWallet && (
-        <div className="modal-overlay" onClick={() => setShowCreateWallet(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{t('wallet.create.title')}</h3>
-              <button 
-                className="modal-close"
-                onClick={() => setShowCreateWallet(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-content">
-              <p>{t('wallet.create.warning')}</p>
-              <button 
-                className="btn btn-primary"
-                onClick={handleCreateWallet}
-              >
-                {t('wallet.create.generate')}
-              </button>
-            </div>
-          </div>
+  const renderCreateWallet = () => (
+    <div className="create-wallet-section">
+      <h3>새 지갑 생성</h3>
+      <div className="form-group">
+        <label>지갑 이름</label>
+        <input
+          type="text"
+          placeholder="지갑 이름을 입력하세요"
+          value={walletName}
+          onChange={(e) => setWalletName(e.target.value)}
+          className="form-input"
+        />
+      </div>
+      
+      <div className="security-info">
+        <h4>보안 정보</h4>
+        <ul>
+          <li>12단어 시드 구문이 생성됩니다</li>
+          <li>시드 구문을 안전한 곳에 백업하세요</li>
+          <li>절대 다른 사람과 공유하지 마세요</li>
+        </ul>
+      </div>
+
+      <div className="form-actions">
+        <button 
+          className="action-button secondary"
+          onClick={() => setActiveTab('overview')}
+        >
+          취소
+        </button>
+        <button 
+          className="action-button primary"
+          onClick={handleCreateWallet}
+          disabled={!walletName.trim()}
+        >
+          지갑 생성
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderRecoverWallet = () => (
+    <div className="recover-wallet-section">
+      <h3>지갑 복구</h3>
+      <div className="form-group">
+        <label>시드 구문</label>
+        <textarea
+          placeholder="12단어 시드 구문을 입력하세요"
+          value={seedPhrase}
+          onChange={(e) => setSeedPhrase(e.target.value)}
+          className="form-textarea"
+          rows={3}
+        />
+      </div>
+      
+      <div className="security-warning">
+        <FaShieldAlt />
+        <p>시드 구문은 안전한 환경에서 입력하세요</p>
+      </div>
+
+      <div className="form-actions">
+        <button 
+          className="action-button secondary"
+          onClick={() => setActiveTab('overview')}
+        >
+          취소
+        </button>
+        <button 
+          className="action-button primary"
+          onClick={handleRecoverWallet}
+          disabled={!seedPhrase.trim()}
+        >
+          지갑 복구
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderDeposit = () => (
+    <div className="deposit-section">
+      <h3>입금</h3>
+      <div className="form-group">
+        <label>입금할 코인</label>
+        <select
+          value={selectedCoin}
+          onChange={(e) => setSelectedCoin(e.target.value)}
+          className="form-select"
+        >
+          <option value="YOY">YOY</option>
+          <option value="ETH">ETH</option>
+          <option value="USDT">USDT</option>
+        </select>
+      </div>
+      
+      <div className="form-group">
+        <label>입금 주소</label>
+        <div className="address-display">
+          <span className="address-text">0x1234567890abcdef1234567890abcdef12345678</span>
+          <button className="copy-button">
+            <FaQrcode />
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* 니모닉 표시 모달 */}
-      {mnemonic && (
-        <div className="modal-overlay" onClick={() => setMnemonic('')}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{t('wallet.mnemonic.title')}</h3>
-              <button 
-                className="modal-close"
-                onClick={() => setMnemonic('')}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-content">
-              <p>{t('wallet.mnemonic.warning')}</p>
-              <div className="mnemonic-display">
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => setShowMnemonic(!showMnemonic)}
-                >
-                  {showMnemonic ? <FaEyeSlash /> : <FaEye />}
-                  {showMnemonic ? t('wallet.mnemonic.hide') : t('wallet.mnemonic.show')}
-                </button>
-                {showMnemonic && (
-                  <div className="mnemonic-text">
-                    {mnemonic}
-                  </div>
-                )}
-              </div>
-              <button 
-                className="btn btn-primary"
-                onClick={() => setMnemonic('')}
-              >
-                {t('wallet.mnemonic.confirm')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="deposit-info">
+        <h4>입금 안내</h4>
+        <ul>
+          <li>위 주소로 {selectedCoin}을 전송하세요</li>
+          <li>네트워크 수수료가 발생할 수 있습니다</li>
+          <li>입금 확인에는 몇 분이 소요됩니다</li>
+        </ul>
+      </div>
 
-      {/* 지갑 복구 모달 */}
-      {showRestoreWallet && (
-        <div className="modal-overlay" onClick={() => setShowRestoreWallet(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{t('wallet.restore.title')}</h3>
-              <button 
-                className="modal-close"
-                onClick={() => setShowRestoreWallet(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-content">
-              <div className="form-group">
-                <label>{t('wallet.restore.mnemonic')}</label>
-                <textarea
-                  value={restoreMnemonic}
-                  onChange={(e) => setRestoreMnemonic(e.target.value)}
-                  placeholder={t('wallet.restore.placeholder')}
-                  rows={4}
-                />
-              </div>
-              <button 
-                className="btn btn-primary"
-                onClick={handleRestoreWallet}
-                disabled={!restoreMnemonic.trim()}
-              >
-                {t('wallet.restore.confirm')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="form-actions">
+        <button 
+          className="action-button secondary"
+          onClick={() => setActiveTab('overview')}
+        >
+          돌아가기
+        </button>
+      </div>
+    </div>
+  );
 
-      {/* 지갑이 설정된 경우 */}
-      {isWalletSetup && (
-        <>
-          {/* 지갑 주소 */}
-          <div className="wallet-address-section">
-            <div className="address-card">
-              <div className="address-info">
-                <h3>{t('wallet.address.title')}</h3>
-                <div className="address-display">
-                  <span className="address-text">{walletAddress}</span>
-                  <button className="copy-btn" onClick={() => copyAddress(walletAddress)}>
-                    {copiedAddress === walletAddress ? <FaCheck /> : <FaCopy />}
-                  </button>
-                </div>
-                <p className="address-note">
-                  {t('wallet.address.note')}
-                </p>
-              </div>
-              <div className="address-actions">
-                <button className="btn btn-secondary">
-                  <FaQrcode />
-                  {t('wallet.address.qr')}
-                </button>
-                <button className="btn btn-secondary" onClick={handleAddAccount}>
-                  <FaPlus />
-                  {t('wallet.address.addAccount')}
-                </button>
-              </div>
-            </div>
-          </div>
+  const renderWithdraw = () => (
+    <div className="withdraw-section">
+      <h3>출금</h3>
+      <div className="form-group">
+        <label>출금할 코인</label>
+        <select
+          value={selectedCoin}
+          onChange={(e) => setSelectedCoin(e.target.value)}
+          className="form-select"
+        >
+          <option value="YOY">YOY</option>
+          <option value="ETH">ETH</option>
+          <option value="USDT">USDT</option>
+        </select>
+      </div>
+      
+      <div className="form-group">
+        <label>출금 주소</label>
+        <input
+          type="text"
+          placeholder="출금할 주소를 입력하세요"
+          className="form-input"
+        />
+      </div>
 
-          {/* 계정 선택 */}
-          {wallet && wallet.accounts.length > 1 && (
-            <div className="accounts-section">
-              <div className="section-header">
-                <h2>{t('wallet.accounts.title')}</h2>
-              </div>
-              <div className="accounts-list">
-                {wallet.accounts.map((account, index) => (
-                  <div 
-                    key={index}
-                    className={`account-item ${currentAccount?.index === index ? 'active' : ''}`}
-                    onClick={() => selectAccount(index)}
-                  >
-                    <span className="account-index">계정 {index + 1}</span>
-                    <span className="account-address">{account.address.slice(0, 6)}...{account.address.slice(-4)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+      <div className="form-group">
+        <label>출금 수량</label>
+        <input
+          type="number"
+          placeholder="출금할 수량을 입력하세요"
+          value={withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value)}
+          className="form-input"
+        />
+      </div>
 
-          {/* 코인별 지갑 주소 리스트 */}
-          {walletCreated && coinWallets.length > 0 && (
-            <div className="coin-wallets-section">
-              <div className="section-header">
-                <h2>코인별 지갑 주소</h2>
-                <p>각 코인별로 생성된 고유 지갑 주소입니다</p>
-              </div>
-              <div className="coin-wallets-list">
-                {coinWallets.map((coinWallet) => (
-                  <div key={coinWallet.coinId} className="coin-wallet-item">
-                    <div className="coin-wallet-header">
-                      <div className="coin-info">
-                        <div className="coin-icon">{coinWallet.coinSymbol.charAt(0)}</div>
-                        <div className="coin-details">
-                          <h3>{coinWallet.coinName}</h3>
-                          <p>{coinWallet.coinSymbol}</p>
-                        </div>
-                      </div>
-                      <div className="network-badge">
-                        {coinWallet.network}
-                      </div>
-                    </div>
-                    <div className="wallet-address-info">
-                      <div className="address-row">
-                        <span className="address-label">지갑 주소:</span>
-                        <div className="address-display">
-                          <span className="address-text">{coinWallet.address}</span>
-                          <button 
-                            className="copy-btn" 
-                            onClick={() => copyAddress(coinWallet.address)}
-                          >
-                            {copiedAddress === coinWallet.address ? <FaCheck /> : <FaCopy />}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="balance-row">
-                        <span className="balance-label">잔액:</span>
-                        <span className="balance-amount">{coinWallet.balance} {coinWallet.coinSymbol}</span>
-                      </div>
-                    </div>
-                    <div className="wallet-actions">
-                      <button 
-                        className="btn btn-secondary"
-                        onClick={() => handleSend({ id: coinWallet.coinId, symbol: coinWallet.coinSymbol, name: coinWallet.coinName, balance: parseFloat(coinWallet.balance), price: 0, change24h: 0, icon: coinWallet.coinSymbol.charAt(0) })}
-                      >
-                        <FaPaperPlane />
-                        전송
-                      </button>
-                      <button 
-                        className="btn btn-primary"
-                        onClick={() => handleReceive({ id: coinWallet.coinId, symbol: coinWallet.coinSymbol, name: coinWallet.coinName, balance: parseFloat(coinWallet.balance), price: 0, change24h: 0, icon: coinWallet.coinSymbol.charAt(0) })}
-                      >
-                        <FaQrcode />
-                        받기
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+      <div className="form-actions">
+        <button 
+          className="action-button secondary"
+          onClick={() => setActiveTab('overview')}
+        >
+          취소
+        </button>
+        <button 
+          className="action-button primary"
+          onClick={handleWithdraw}
+          disabled={!withdrawAmount || !withdrawAmount.trim()}
+        >
+          출금
+        </button>
+      </div>
+    </div>
+  );
 
-          {/* 코인 목록 */}
-          <div className="coins-section">
-            <div className="section-header">
-              <h2>보유 자산</h2>
-              <button className="btn btn-primary">
-                <FaPlus />
-                코인 추가
-              </button>
-            </div>
+  return (
+    <div className="wallet-page">
+      <div className="page-header">
+        <h1>지갑 관리</h1>
+        <p>지갑 생성, 복구, 입출금을 관리하세요</p>
+      </div>
 
-            <div className="coins-list">
-              {coins.map((coin) => (
-                <div key={coin.id} className="coin-item">
-                  <div className="coin-info">
-                    <div className="coin-icon">{coin.icon}</div>
-                    <div className="coin-details">
-                      <h3>{coin.name}</h3>
-                      <p>{coin.symbol}</p>
-                    </div>
-                    <div className="coin-balance">
-                      <div className="balance-amount">{coin.balance} {coin.symbol}</div>
-                      <div className="balance-value">{formatCurrency(coin.balance * coin.price)}</div>
-                    </div>
-                  </div>
-                  <div className="coin-actions">
-                    <button 
-                      className="btn btn-secondary"
-                      onClick={() => handleSend(coin)}
-                    >
-                      <FaPaperPlane />
-                      전송
-                    </button>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => handleReceive(coin)}
-                    >
-                      <FaQrcode />
-                      받기
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+      {/* 탭 네비게이션 */}
+      <div className="tab-navigation">
+        <button
+          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <FaWallet />
+          개요
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'create' ? 'active' : ''}`}
+          onClick={() => setActiveTab('create')}
+        >
+          <FaPlus />
+          생성
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'recover' ? 'active' : ''}`}
+          onClick={() => setActiveTab('recover')}
+        >
+          <FaDownload />
+          복구
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'deposit' ? 'active' : ''}`}
+          onClick={() => setActiveTab('deposit')}
+        >
+          <FaUpload />
+          입금
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'withdraw' ? 'active' : ''}`}
+          onClick={() => setActiveTab('withdraw')}
+        >
+          <FaKey />
+          출금
+        </button>
+      </div>
 
-      {/* 전송 모달 */}
-      {showSendModal && selectedCoin && (
-        <div className="modal-overlay" onClick={() => setShowSendModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{selectedCoin.name} 전송</h3>
-              <button 
-                className="modal-close"
-                onClick={() => setShowSendModal(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-content">
-              <div className="form-group">
-                <label>받는 주소</label>
-                <input 
-                  type="text" 
-                  placeholder="지갑 주소를 입력하세요"
-                  value={sendToAddress}
-                  onChange={(e) => setSendToAddress(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>전송 수량</label>
-                <input 
-                  type="number" 
-                  placeholder="0.00"
-                  value={sendAmount}
-                  onChange={(e) => setSendAmount(e.target.value)}
-                />
-                <span className="balance-info">
-                  보유: {selectedCoin.balance} {selectedCoin.symbol}
-                </span>
-              </div>
-              <div className="form-group">
-                <label>수수료</label>
-                <input type="text" value="0.001" readOnly />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowSendModal(false)}>
-                취소
-              </button>
-              <button 
-                className="btn btn-primary"
-                onClick={handleSendTransaction}
-                disabled={sendLoading || !sendToAddress.trim() || !sendAmount.trim()}
-              >
-                {sendLoading ? '전송 중...' : '전송'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 받기 모달 */}
-      {showReceiveModal && selectedCoin && (
-        <div className="modal-overlay" onClick={() => setShowReceiveModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{selectedCoin.name} 받기</h3>
-              <button 
-                className="modal-close"
-                onClick={() => setShowReceiveModal(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-content">
-              <div className="qr-section">
-                <div className="qr-placeholder">
-                  <FaQrcode />
-                  <p>QR 코드</p>
-                </div>
-              </div>
-              <div className="address-section">
-                <label>지갑 주소</label>
-                <div className="address-display">
-                  <span className="address-text">{walletAddress}</span>
-                  <button className="copy-btn" onClick={() => copyAddress(walletAddress)}>
-                    {copiedAddress === walletAddress ? <FaCheck /> : <FaCopy />}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-primary" onClick={() => setShowReceiveModal(false)}>
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 탭 콘텐츠 */}
+      <div className="tab-content">
+        {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'create' && renderCreateWallet()}
+        {activeTab === 'recover' && renderRecoverWallet()}
+        {activeTab === 'deposit' && renderDeposit()}
+        {activeTab === 'withdraw' && renderWithdraw()}
+      </div>
     </div>
   );
 };

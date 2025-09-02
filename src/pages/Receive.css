@@ -1,0 +1,515 @@
+.receive-page {
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  margin: 0 0 10px 0;
+  color: var(--primary-color);
+  font-size: 2.5rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* 네트워크 필터 */
+.network-filter {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.network-filter h3 {
+  margin: 0 0 20px 0;
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+.network-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.network-button {
+  padding: 12px 24px;
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 120px;
+}
+
+.network-button:hover {
+  border-color: var(--primary-color);
+  background: var(--hover-color);
+}
+
+.network-button.active {
+  background: var(--primary-color);
+  color: #333333;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* 지갑 섹션 */
+.wallets-section {
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.add-wallet-button {
+  background: var(--primary-color);
+  color: #333333;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-wallet-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* 지갑 그리드 */
+.wallets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+.wallet-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  border: 1px solid var(--border-color);
+}
+
+.wallet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.wallet-info h4 {
+  margin: 0 0 8px 0;
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+.network-badge {
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.network-badge.ethereum {
+  background: rgba(98, 126, 234, 0.1);
+  color: #627eea;
+}
+
+.network-badge.bsc {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.network-badge.polygon {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.network-badge.arbitrum {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.wallet-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-dot.active {
+  background: #4CAF50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+}
+
+.status-dot.inactive {
+  background: #9E9E9E;
+}
+
+/* 지갑 정보 */
+.wallet-address,
+.wallet-balance {
+  margin-bottom: 20px;
+}
+
+.wallet-address label,
+.wallet-balance label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-color);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.address-text {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--text-color);
+  word-break: break-all;
+  flex: 1;
+}
+
+.copy-button {
+  background: var(--primary-color);
+  color: #333333;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.copy-button:hover {
+  background: var(--primary-hover);
+  transform: scale(1.1);
+}
+
+.balance-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* 지갑 액션 */
+.wallet-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.action-button.primary {
+  background: var(--primary-color);
+  color: #333333;
+  border-radius: 50px;
+  padding: 12px 30px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-button.primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.action-button.secondary {
+  background: var(--border-color);
+  color: var(--text-color);
+}
+
+.action-button.secondary:hover {
+  background: var(--hover-color);
+  transform: translateY(-2px);
+}
+
+/* 개인키 섹션 */
+.private-key-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--bg-color);
+  border-radius: 12px;
+  border: 2px solid #f44336;
+}
+
+.security-warning {
+  background: #f44336;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+}
+
+.private-key-display label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.private-key-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card-bg);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f44336;
+}
+
+.private-key-text span {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-color);
+  word-break: break-all;
+  flex: 1;
+}
+
+/* 지갑 푸터 */
+.wallet-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.created-date {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* 빠른 액션 */
+.quick-actions {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.quick-actions h3 {
+  margin: 0 0 20px 0;
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.quick-action-button {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+  padding: 15px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.quick-action-button:hover {
+  border-color: var(--primary-color);
+  background: var(--hover-color);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 보안 팁 */
+.security-tips {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 25px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.security-tips h3 {
+  margin: 0 0 20px 0;
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.security-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.security-tips li {
+  margin-bottom: 10px;
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.security-tips li:last-child {
+  margin-bottom: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .receive-page {
+    padding: 15px;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .network-buttons {
+    gap: 10px;
+  }
+  
+  .network-button {
+    min-width: 100px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  .wallets-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .wallet-card {
+    padding: 20px;
+  }
+  
+  .wallet-actions {
+    flex-direction: column;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .quick-action-button {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .network-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .network-button {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .wallet-card {
+    padding: 15px;
+  }
+  
+  .address-text,
+  .private-key-text span {
+    font-size: 12px;
+  }
+  
+  .balance-amount {
+    font-size: 1.3rem;
+  }
+}
+
+/* Black & Gold 테마 */
+.receive-page {
+  --bg-color: #1a1a1a;
+  --card-bg: #2d2d2d;
+  --border-color: #404040;
+  --text-color: #ffffff;
+  --text-muted: #b0b0b0;
+  --hover-color: #404040;
+  --primary-color: #ffd700;
+  --primary-hover: #e6c200;
+}

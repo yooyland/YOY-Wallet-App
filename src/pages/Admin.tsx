@@ -46,6 +46,44 @@ interface AdminFormData {
   role: 'admin' | 'super_admin';
 }
 
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  isAdmin: boolean;
+  status: 'active' | 'blacklisted' | 'whitelisted';
+  createdAt: string;
+  lastLogin?: string;
+}
+
+interface BlacklistEntry {
+  id: string;
+  address: string;
+  reason: string;
+  addedBy: 'VP' | 'Valp';
+  addedAt: string;
+  status: 'active' | 'removed';
+  requestType?: 'blacklist_add' | 'blacklist_remove' | 'whitelist_recovery';
+  requestStatus?: 'pending' | 'approved' | 'rejected';
+  requestedBy?: string; // 요청한 사용자
+  requestReason?: string; // 요청 사유
+}
+
+interface GovernanceRequest {
+  id: string;
+  type: 'blacklist_add' | 'blacklist_remove' | 'whitelist_recovery';
+  address: string;
+  reason: string;
+  requestedBy: string;
+  requestStatus: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  processedBy?: string; // Valp가 처리한 경우
+  processedAt?: string;
+  notes?: string; // Valp의 처리 노트
+}
+
 const Admin: React.FC = () => {
   const { user } = useAuth();
   const { 
@@ -61,13 +99,96 @@ const Admin: React.FC = () => {
   } = useAdmin();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'coins' | 'analytics' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'user-management' | 'coins' | 'analytics' | 'settings' | 'blacklist' | 'governance-requests'>('dashboard');
   const [showCoinModal, setShowCoinModal] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showBlacklistModal, setShowBlacklistModal] = useState(false);
   const [editingCoin, setEditingCoin] = useState<string | null>(null);
   const [editingAdmin, setEditingAdmin] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<string | null>(null);
   const [searchSymbol, setSearchSymbol] = useState('');
+  const [searchUser, setSearchUser] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+
+  // 모의 사용자 데이터
+  const [users, setUsers] = useState<User[]>([
+    {
+      id: '1',
+      email: 'admin@yooyland.com',
+      username: 'admin',
+      firstName: '관리자',
+      lastName: '시스템',
+      isAdmin: true,
+      status: 'whitelisted',
+      createdAt: '2024-01-01T00:00:00Z',
+      lastLogin: '2024-12-19T10:00:00Z'
+    },
+    {
+      id: '2',
+      email: 'jch4389@gmail.com',
+      username: 'jch4389',
+      firstName: '정창훈',
+      lastName: '개발자',
+      isAdmin: false,
+      status: 'active',
+      createdAt: '2024-01-15T00:00:00Z',
+      lastLogin: '2024-12-19T09:30:00Z'
+    },
+    {
+      id: '3',
+      email: 'agosky@naver.com',
+      username: 'agosky',
+      firstName: '아고스키',
+      lastName: '사용자',
+      isAdmin: false,
+      status: 'active',
+      createdAt: '2024-02-01T00:00:00Z',
+      lastLogin: '2024-12-19T08:45:00Z'
+    }
+  ]);
+
+  // 모의 블랙리스트 데이터
+  const [blacklist, setBlacklist] = useState<BlacklistEntry[]>([
+    {
+      id: '1',
+      address: '0x1234567890abcdef1234567890abcdef12345678',
+      reason: '의심스러운 거래 패턴',
+      addedBy: 'VP',
+      addedAt: '2024-12-15T00:00:00Z',
+      status: 'active'
+    },
+    {
+      id: '2',
+      address: '0xabcdef1234567890abcdef1234567890abcdef12',
+      reason: '스팸 계정',
+      addedBy: 'Valp',
+      addedAt: '2024-12-18T00:00:00Z',
+      status: 'active'
+    }
+  ]);
+
+  // 모의 거버넌스 요청 데이터
+  const [governanceRequests, setGovernanceRequests] = useState<GovernanceRequest[]>([
+    {
+      id: '1',
+      type: 'whitelist_recovery',
+      address: '0x1234567890abcdef1234567890abcdef12345678',
+      reason: '의심스러운 거래 패턴이 해결되었습니다.',
+      requestedBy: 'jch4389@gmail.com',
+      requestStatus: 'pending',
+      createdAt: '2024-12-19T09:00:00Z'
+    },
+    {
+      id: '2',
+      type: 'blacklist_add',
+      address: '0x9876543210fedcba9876543210fedcba98765432',
+      reason: '새로운 스팸 계정 발견',
+      requestedBy: 'agosky@naver.com',
+      requestStatus: 'pending',
+      createdAt: '2024-12-19T10:00:00Z'
+    }
+  ]);
 
   const [coinFormData, setCoinFormData] = useState<CoinFormData>({
     symbol: '',
@@ -98,24 +219,11 @@ const Admin: React.FC = () => {
   const handleCoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const coinData = {
-        symbol: coinFormData.symbol,
-        name: coinFormData.name,
-        contractAddress: coinFormData.contractAddress,
-        network: coinFormData.network,
-        decimals: coinFormData.decimals,
-        totalSupply: coinFormData.totalSupply,
-        isActive: coinFormData.isActive,
-        logoUrl: coinFormData.logoUrl || undefined,
-      };
-
-      console.log('코인 추가/수정 데이터:', coinData); // 디버깅
-
       if (editingCoin) {
-        await updateCoin(editingCoin, coinData);
+        await updateCoin(editingCoin, coinFormData);
         toast.success('코인이 업데이트되었습니다.');
       } else {
-        await addCoin(coinData);
+        await addCoin(coinFormData);
         toast.success('코인이 추가되었습니다.');
       }
       setShowCoinModal(false);
@@ -132,8 +240,142 @@ const Admin: React.FC = () => {
         logoFile: undefined,
       });
     } catch (error) {
-      toast.error('코인 추가/수정에 실패했습니다.');
+      toast.error('코인 처리에 실패했습니다.');
     }
+  };
+
+  // 사용자 상태 변경 함수
+  const handleUserStatusChange = (userId: string, newStatus: 'active' | 'blacklisted' | 'whitelisted') => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === userId ? { ...user, status: newStatus } : user
+      )
+    );
+    
+    const statusText = {
+      active: '활성',
+      blacklisted: '블랙리스트',
+      whitelisted: '화이트리스트'
+    };
+    
+    toast.success(`사용자 상태가 ${statusText[newStatus]}로 변경되었습니다.`);
+  };
+
+  // 블랙리스트에 주소 추가
+  const handleAddToBlacklist = (address: string, reason: string, addedBy: 'VP' | 'Valp') => {
+    const newEntry: BlacklistEntry = {
+      id: Date.now().toString(),
+      address,
+      reason,
+      addedBy,
+      addedAt: new Date().toISOString(),
+      status: 'active'
+    };
+    
+    setBlacklist(prev => [...prev, newEntry]);
+    toast.success('주소가 블랙리스트에 추가되었습니다.');
+  };
+
+  // 블랙리스트에서 주소 제거
+  const handleRemoveFromBlacklist = (entryId: string) => {
+    setBlacklist(prev => 
+      prev.map(entry => 
+        entry.id === entryId ? { ...entry, status: 'removed' } : entry
+      )
+    );
+    toast.success('주소가 블랙리스트에서 제거되었습니다.');
+  };
+
+  // 화이트리스트에 주소 추가
+  const handleAddToWhitelist = (address: string) => {
+    // 블랙리스트에서 제거
+    setBlacklist(prev => 
+      prev.map(entry => 
+        entry.address.toLowerCase() === address.toLowerCase() 
+          ? { ...entry, status: 'removed' } 
+          : entry
+      )
+    );
+    
+    // 사용자 상태를 화이트리스트로 변경 (해당 이메일을 가진 사용자가 있는 경우)
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.email.toLowerCase().includes(address.toLowerCase()) || 
+        user.username.toLowerCase().includes(address.toLowerCase())
+          ? { ...user, status: 'whitelisted' }
+          : user
+      )
+    );
+    
+    toast.success('주소가 화이트리스트에 추가되었습니다.');
+  };
+
+  // VP 자동 블랙리스트 추가 (시스템 이벤트)
+  const handleVPAutoBlacklist = (address: string, reason: string) => {
+    const newEntry: BlacklistEntry = {
+      id: Date.now().toString(),
+      address,
+      reason,
+      addedBy: 'VP',
+      addedAt: new Date().toISOString(),
+      status: 'active'
+    };
+    
+    setBlacklist(prev => [...prev, newEntry]);
+    
+    // VP 시스템 메시지 표시
+    toast.success(`VP가 주소 ${address.substring(0, 10)}...를 블랙리스트에 자동 추가했습니다.`, {
+      duration: 5000,
+      icon: '🤖'
+    });
+  };
+
+  // Valp가 거버넌스 요청 승인/거절
+  const handleGovernanceRequest = (requestId: string, action: 'approve' | 'reject', notes?: string) => {
+    setGovernanceRequests(prev => 
+      prev.map(request => 
+        request.id === requestId 
+          ? { 
+              ...request, 
+              requestStatus: action === 'approve' ? 'approved' : 'rejected',
+              processedBy: user?.email || 'Valp',
+              processedAt: new Date().toISOString(),
+              notes
+            }
+          : request
+      )
+    );
+
+    const request = governanceRequests.find(r => r.id === requestId);
+    if (request) {
+      if (action === 'approve') {
+        // 요청 승인 시 실제 처리
+        if (request.type === 'whitelist_recovery') {
+          handleAddToWhitelist(request.address);
+        } else if (request.type === 'blacklist_add') {
+          handleAddToBlacklist(request.address, request.reason, 'Valp');
+        }
+        toast.success('거버넌스 요청이 승인되었습니다.');
+      } else {
+        toast.error('거버넌스 요청이 거절되었습니다.');
+      }
+    }
+  };
+
+  // 새로운 거버넌스 요청 생성
+  const handleCreateGovernanceRequest = (type: 'blacklist_add' | 'blacklist_remove' | 'whitelist_recovery', address: string, reason: string) => {
+    const newRequest: GovernanceRequest = {
+      id: Date.now().toString(),
+      type,
+      address,
+      reason,
+      requestedBy: user?.email || 'unknown',
+      requestStatus: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    
+    setGovernanceRequests(prev => [...prev, newRequest]);
+    toast.success('거버넌스 요청이 생성되었습니다. Valp의 승인을 기다립니다.');
   };
 
   const handleAdminSubmit = async (e: React.FormEvent) => {
@@ -372,6 +614,249 @@ const Admin: React.FC = () => {
     </div>
   );
 
+  // 일반 사용자 관리 탭
+  const renderUserManagement = () => (
+    <div className="user-management">
+      <div className="section-header">
+        <h2>사용자 관리</h2>
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="사용자 검색..."
+            value={searchUser}
+            onChange={(e) => setSearchUser(e.target.value)}
+          />
+          <FaSearch className="search-icon" />
+        </div>
+      </div>
+
+      <div className="users-table">
+        <table>
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th>사용자명</th>
+              <th>이메일</th>
+              <th>상태</th>
+              <th>가입일</th>
+              <th>마지막 로그인</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users
+              .filter(user => 
+                user.email.toLowerCase().includes(searchUser.toLowerCase()) ||
+                user.username.toLowerCase().includes(searchUser.toLowerCase()) ||
+                user.firstName.toLowerCase().includes(searchUser.toLowerCase()) ||
+                user.lastName.toLowerCase().includes(searchUser.toLowerCase())
+              )
+              .map(user => (
+                <tr key={user.id}>
+                  <td>{user.firstName} {user.lastName}</td>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <span className={`status-badge ${user.status}`}>
+                      {user.status === 'active' ? '활성' : 
+                       user.status === 'blacklisted' ? '블랙리스트' : '화이트리스트'}
+                    </span>
+                  </td>
+                  <td>{new Date(user.createdAt).toLocaleDateString('ko-KR')}</td>
+                  <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('ko-KR') : '-'}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <select
+                        value={user.status}
+                        onChange={(e) => handleUserStatusChange(user.id, e.target.value as any)}
+                        className="status-select"
+                      >
+                        <option value="active">활성</option>
+                        <option value="blacklisted">블랙리스트</option>
+                        <option value="whitelisted">화이트리스트</option>
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // 블랙리스트 관리 탭
+  const renderBlacklistManagement = () => (
+    <div className="blacklist-management">
+      <div className="section-header">
+        <h2>블랙리스트/화이트리스트 관리</h2>
+        <div className="header-actions">
+          <button 
+            className="btn btn-primary"
+            onClick={() => setShowBlacklistModal(true)}
+          >
+            <FaUserMinus />
+            블랙리스트 추가
+          </button>
+          <button 
+            className="btn btn-success"
+            onClick={() => handleVPAutoBlacklist('0x' + Math.random().toString(36).substr(2, 40), 'VP 자동 감지 테스트')}
+          >
+            🤖 VP 테스트
+          </button>
+        </div>
+      </div>
+
+      <div className="blacklist-table">
+        <table>
+          <thead>
+            <tr>
+              <th>주소/이메일</th>
+              <th>사유</th>
+              <th>추가자</th>
+              <th>추가일</th>
+              <th>상태</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {blacklist
+              .filter(entry => entry.status === 'active')
+              .map(entry => (
+                <tr key={entry.id}>
+                  <td>{entry.address}</td>
+                  <td>{entry.reason}</td>
+                  <td>
+                    <span className={`authority-badge ${entry.addedBy}`}>
+                      {entry.addedBy === 'VP' ? 'VP (자동)' : 'Valp (수동)'}
+                    </span>
+                  </td>
+                  <td>{new Date(entry.addedAt).toLocaleDateString('ko-KR')}</td>
+                  <td>
+                    <span className="status-badge active">활성</span>
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button 
+                        className="btn btn-success btn-sm"
+                        onClick={() => handleAddToWhitelist(entry.address)}
+                        title="화이트리스트로 이동"
+                      >
+                        <FaUserPlus />
+                      </button>
+                      <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemoveFromBlacklist(entry.id)}
+                        title="블랙리스트에서 제거"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // 거버넌스 요청 관리 탭
+  const renderGovernanceRequests = () => (
+    <div className="governance-requests">
+      <div className="section-header">
+        <h2>거버넌스 요청 관리 (Valp 전용)</h2>
+        <p className="section-description">
+          VP 자동 결정과 사용자 요청을 Valp가 검증하고 승인/거절합니다.
+        </p>
+      </div>
+
+      <div className="requests-grid">
+        <div className="pending-requests">
+          <h3>승인 대기중인 요청</h3>
+          <div className="request-list">
+            {governanceRequests
+              .filter(request => request.requestStatus === 'pending')
+              .map(request => (
+                <div key={request.id} className="request-card pending">
+                  <div className="request-header">
+                    <span className={`request-type ${request.type}`}>
+                      {request.type === 'blacklist_add' ? '🚫 블랙리스트 추가' :
+                       request.type === 'blacklist_remove' ? '✅ 블랙리스트 제거' :
+                       '🔄 화이트리스트 복구'}
+                    </span>
+                    <span className="request-status pending">승인 대기</span>
+                  </div>
+                  
+                  <div className="request-content">
+                    <div className="request-info">
+                      <p><strong>주소:</strong> {request.address}</p>
+                      <p><strong>사유:</strong> {request.reason}</p>
+                      <p><strong>요청자:</strong> {request.requestedBy}</p>
+                      <p><strong>요청일:</strong> {new Date(request.createdAt).toLocaleDateString('ko-KR')}</p>
+                    </div>
+                    
+                    <div className="request-actions">
+                      <button 
+                        className="btn btn-success btn-sm"
+                        onClick={() => handleGovernanceRequest(request.id, 'approve')}
+                      >
+                        ✅ 승인
+                      </button>
+                      <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleGovernanceRequest(request.id, 'reject')}
+                      >
+                        ❌ 거절
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            
+            {governanceRequests.filter(r => r.requestStatus === 'pending').length === 0 && (
+              <div className="no-requests">
+                <p>승인 대기중인 요청이 없습니다.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="processed-requests">
+          <h3>처리된 요청</h3>
+          <div className="request-list">
+            {governanceRequests
+              .filter(request => request.requestStatus !== 'pending')
+              .map(request => (
+                <div key={request.id} className={`request-card ${request.requestStatus}`}>
+                  <div className="request-header">
+                    <span className={`request-type ${request.type}`}>
+                      {request.type === 'blacklist_add' ? '🚫 블랙리스트 추가' :
+                       request.type === 'blacklist_remove' ? '✅ 블랙리스트 제거' :
+                       '🔄 화이트리스트 복구'}
+                    </span>
+                    <span className={`request-status ${request.requestStatus}`}>
+                      {request.requestStatus === 'approved' ? '승인됨' : '거절됨'}
+                    </span>
+                  </div>
+                  
+                  <div className="request-content">
+                    <div className="request-info">
+                      <p><strong>주소:</strong> {request.address}</p>
+                      <p><strong>사유:</strong> {request.reason}</p>
+                      <p><strong>요청자:</strong> {request.requestedBy}</p>
+                      <p><strong>처리자:</strong> {request.processedBy}</p>
+                      <p><strong>처리일:</strong> {request.processedAt ? new Date(request.processedAt).toLocaleDateString('ko-KR') : '-'}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderCoins = () => (
     <div className="admin-coins">
       <div className="section-header">
@@ -536,56 +1021,69 @@ const Admin: React.FC = () => {
   );
 
   return (
-    <div className="admin-page">
+    <div className="admin-container">
       <div className="admin-header">
-        <div className="header-content">
-          <div className="header-left">
-            <h1>관리자 패널</h1>
-            <p>시스템 관리 및 모니터링</p>
-          </div>
-          <div className="header-right">
-            <button 
-              className="btn btn-secondary"
-              onClick={() => navigate('/')}
-            >
-              <FaArrowLeft />
-              사용자 환경으로 돌아가기
-            </button>
-          </div>
-        </div>
+        <button className="back-btn" onClick={() => navigate('/')}>
+          <FaArrowLeft />
+          뒤로 가기
+        </button>
+        <h1>관리자 패널</h1>
+        <p>YOY Wallet 시스템 관리</p>
       </div>
 
-      <div className="admin-navigation">
+      {/* 탭 네비게이션 */}
+      <div className="admin-tabs">
         <button 
-          className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
           onClick={() => setActiveTab('dashboard')}
         >
           <FaChartLine />
           대시보드
         </button>
         <button 
-          className={`nav-tab ${activeTab === 'users' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
           <FaUsers />
           관리자
         </button>
         <button 
-          className={`nav-tab ${activeTab === 'coins' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'user-management' ? 'active' : ''}`}
+          onClick={() => setActiveTab('user-management')}
+        >
+          <FaUsers />
+          사용자 관리
+        </button>
+        <button 
+          className={`tab ${activeTab === 'coins' ? 'active' : ''}`}
           onClick={() => setActiveTab('coins')}
         >
           <FaCoins />
           코인 관리
         </button>
         <button 
-          className={`nav-tab ${activeTab === 'analytics' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'blacklist' ? 'active' : ''}`}
+          onClick={() => setActiveTab('blacklist')}
+        >
+          <FaShieldAlt />
+          블랙리스트
+        </button>
+        <button 
+          className={`tab ${activeTab === 'governance-requests' ? 'active' : ''}`}
+          onClick={() => setActiveTab('governance-requests')}
+        >
+          <FaDatabase />
+          거버넌스 요청
+        </button>
+        <button 
+          className={`tab ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
           <FaChartLine />
           분석
         </button>
         <button 
-          className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveTab('settings')}
         >
           <FaCog />
@@ -593,10 +1091,14 @@ const Admin: React.FC = () => {
         </button>
       </div>
 
-      <div className="admin-content">
+      {/* 탭 콘텐츠 */}
+      <div className="tab-content">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'users' && renderUsers()}
+        {activeTab === 'user-management' && renderUserManagement()}
         {activeTab === 'coins' && renderCoins()}
+        {activeTab === 'blacklist' && renderBlacklistManagement()}
+        {activeTab === 'governance-requests' && renderGovernanceRequests()}
         {activeTab === 'analytics' && renderAnalytics()}
         {activeTab === 'settings' && renderSettings()}
       </div>

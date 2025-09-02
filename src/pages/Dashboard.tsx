@@ -1,221 +1,264 @@
-import React, { useState, useEffect } from 'react';
-import { FaBitcoin, FaEthereum, FaChartLine, FaArrowUp, FaArrowDown, FaPlus, FaStar, FaSearch } from 'react-icons/fa';
-import { Coin, Transaction } from '../types';
-import './Dashboard.css';
-import { getErc20Balance } from '../services/eth';
-import { getTokenPriceUSDByContract } from '../services/prices';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useWallet } from '../contexts/WalletContext';
 import { useAdmin } from '../contexts/AdminContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import { getRealTimePrices, CoinPrice } from '../services/prices';
+import { FaStar, FaStar as FaStarSolid, FaPlus, FaSearch, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import './Dashboard.css';
+
+interface Coin {
+  id: string;
+  symbol: string;
+  name: string;
+  balance: number;
+  price: number;
+  change24h: number;
+  volume: number;
+  icon: string;
+  isFavorite?: boolean;
+}
+
+interface Transaction {
+  id: string;
+  type: 'send' | 'receive' | 'swap';
+  coin: string;
+  amount: number;
+  address: string;
+  timestamp: string;
+  status: 'completed' | 'pending' | 'failed';
+  txHash?: string;
+}
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const { currentAccount } = useWallet();
   const { adminCoins } = useAdmin();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  
+  const [activeMarket, setActiveMarket] = useState<'KRW' | 'ETH' | 'BTC' | 'BSC' | 'USDT' | 'MY' | 'FAV'>('KRW');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'price' | 'change' | 'volume'>('price');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [realTimePrices, setRealTimePrices] = useState<CoinPrice[]>([]);
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [totalBalance, setTotalBalance] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
-  const [selectedMarket, setSelectedMarket] = useState('USDT');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<'price' | 'change24h' | 'volume'>('price');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [favorites, setFavorites] = useState<string[]>([]);
 
-  // 관리자가 등록한 코인들을 사용
-  const availableCoins: Coin[] = React.useMemo(() => 
-    adminCoins
+  // 모의 데이터 함수들 (useMemo 이전에 정의)
+  const getMockBalance = (symbol: string) => {
+    const balanceMap: { [key: string]: number } = {
+      'BTC': 0.5,
+      'ETH': 2.5,
+      'YOY': 41214,
+      'USDT': 1000,
+      'USDC': 500,
+      'BNB': 10,
+      'ADA': 5000,
+      'SOL': 100,
+      'DOT': 200,
+      'LINK': 50,
+      'XRP': 10000,
+      'AVAX': 50,
+      'ATOM': 100,
+      'LTC': 20,
+      'TRX': 10000,
+      'XLM': 5000,
+      'XMR': 5,
+      'DOGE': 10000,
+    };
+    return balanceMap[symbol.toUpperCase()] || Math.random() * 1000;
+  };
+
+  const getMockPrice = (symbol: string) => {
+    const priceMap: { [key: string]: number } = {
+      'BTC': 47500,
+      'ETH': 3350,
+      'YOY': 0.125,
+      'USDT': 1.0,
+      'USDC': 1.0,
+      'BNB': 325,
+      'ADA': 0.55,
+      'SOL': 110,
+      'DOT': 8.5,
+      'LINK': 17.5,
+      'XRP': 0.65,
+      'AVAX': 35,
+      'ATOM': 12,
+      'LTC': 85,
+      'TRX': 0.08,
+      'XLM': 0.12,
+      'XMR': 180,
+      'DOGE': 0.15,
+    };
+    return priceMap[symbol.toUpperCase()] || 50;
+  };
+
+  const getMockChange = (symbol: string) => {
+    const changeMap: { [key: string]: number } = {
+      'BTC': 2.5,
+      'ETH': -1.2,
+      'YOY': 5.8,
+      'USDT': 0.0,
+      'USDC': 0.0,
+      'BNB': 3.1,
+      'ADA': -0.8,
+      'SOL': 4.2,
+      'DOT': 1.5,
+      'LINK': -2.1,
+      'XRP': 1.8,
+      'AVAX': -0.5,
+      'ATOM': 2.3,
+      'LTC': -1.1,
+      'TRX': 0.9,
+      'XLM': -0.3,
+      'XMR': 1.2,
+      'DOGE': 3.5,
+    };
+    return changeMap[symbol.toUpperCase()] || 0;
+  };
+
+  const getMockVolume = (symbol: string) => {
+    const volumeMap: { [key: string]: number } = {
+      'BTC': 25000000000,
+      'ETH': 15000000000,
+      'YOY': 5000000,
+      'USDT': 50000000000,
+      'USDC': 2000000000,
+      'BNB': 800000000,
+      'ADA': 500000000,
+      'SOL': 2000000000,
+      'DOT': 300000000,
+      'LINK': 800000000,
+      'XRP': 2000000000,
+      'AVAX': 400000000,
+      'ATOM': 200000000,
+      'LTC': 300000000,
+      'TRX': 800000000,
+      'XLM': 200000000,
+      'XMR': 100000000,
+      'DOGE': 600000000,
+    };
+    return volumeMap[symbol.toUpperCase()] || 100000000;
+  };
+
+  const getCoinIcon = (symbol: string) => {
+    // 특정 코인에 대해서는 이미지 파일 사용
+    if (['BTC', 'ETH', 'YOY'].includes(symbol.toUpperCase())) {
+      return `/assets/${symbol.toLowerCase()}.png`;
+    }
+    // 나머지는 텍스트 심볼
+    return symbol;
+  };
+
+  // 코인 심볼을 CoinGecko ID로 변환
+  const getCoinGeckoId = (symbol: string): string => {
+    const idMap: { [key: string]: string } = {
+      'BTC': 'bitcoin',
+      'ETH': 'ethereum',
+      'USDT': 'tether',
+      'USDC': 'usd-coin',
+      'BNB': 'binancecoin',
+      'ADA': 'cardano',
+      'SOL': 'solana',
+      'DOT': 'polkadot',
+      'LINK': 'chainlink',
+      'XRP': 'ripple',
+      'AVAX': 'avalanche-2',
+      'ATOM': 'cosmos',
+      'LTC': 'litecoin',
+      'TRX': 'tron',
+      'XLM': 'stellar',
+      'XMR': 'monero',
+      'DOGE': 'dogecoin',
+    };
+    
+    return idMap[symbol.toUpperCase()] || symbol.toLowerCase();
+  };
+
+  // 실제 가격 데이터 가져오기
+  useEffect(() => {
+    const fetchPrices = async () => {
+      if (adminCoins.length === 0) return;
+      
+      setIsLoadingPrices(true);
+      try {
+        const coinIds = adminCoins
+          .filter(coin => coin.isActive)
+          .map(coin => getCoinGeckoId(coin.symbol));
+        
+        const prices = await getRealTimePrices(coinIds);
+        setRealTimePrices(prices);
+      } catch (error) {
+        console.error('가격 데이터 가져오기 실패:', error);
+      } finally {
+        setIsLoadingPrices(false);
+      }
+    };
+
+    fetchPrices();
+    
+    // 30초마다 가격 업데이트
+    const interval = setInterval(fetchPrices, 30000);
+    return () => clearInterval(interval);
+  }, [adminCoins]);
+
+  // 실제 가격 데이터를 사용한 코인 목록
+  const availableCoins: Coin[] = useMemo(() => {
+    return adminCoins
       .filter(coin => coin.isActive)
       .map(adminCoin => {
-        // 실제 코인 심볼 매핑 또는 이미지 경로 반환
-        const getCoinIcon = (symbol: string) => {
-          switch (symbol.toUpperCase()) {
-            case 'BTC': return '/assets/btc.png'; // 이미지 경로
-            case 'ETH': return '/assets/eth.png'; // 이미지 경로
-            case 'YOY': return '/assets/yoy.png'; // 이미지 경로
-            case 'USDT': return '$';
-            case 'USDC': return '$';
-            case 'BNB': return 'B';
-            case 'ADA': return 'A';
-            case 'SOL': return 'S';
-            case 'DOT': return 'D';
-            case 'MATIC': return 'M';
-            case 'LINK': return 'L';
-            case 'UNI': return 'U';
-            case 'AVAX': return 'A';
-            case 'ATOM': return 'A';
-            case 'LTC': return 'Ł';
-            case 'XRP': return 'X';
-            case 'DOGE': return 'Ð';
-            case 'SHIB': return 'S';
-            case 'XLM': return 'X';
-            case 'XMR': return 'M';
-            case 'TRX': return 'T';
-            default: return symbol.charAt(0);
-          }
+        const priceData = realTimePrices.find(p => p.symbol.toUpperCase() === adminCoin.symbol);
+        
+        return {
+          id: adminCoin.id,
+          symbol: adminCoin.symbol,
+          name: adminCoin.name,
+          balance: getMockBalance(adminCoin.symbol), // 실제로는 지갑에서 가져와야 함
+          price: priceData?.current_price || getMockPrice(adminCoin.symbol),
+          change24h: priceData?.price_change_percentage_24h || getMockChange(adminCoin.symbol),
+          volume: priceData?.total_volume || getMockVolume(adminCoin.symbol),
+          icon: adminCoin.logoUrl || getCoinIcon(adminCoin.symbol),
+          isFavorite: favorites.includes(adminCoin.symbol)
         };
+      });
+  }, [adminCoins, realTimePrices, favorites]);
 
-        // 실제 거래량 데이터 (시뮬레이션)
-        const getMockVolume = (symbol: string) => {
-          const volumeMap: { [key: string]: number } = {
-            'BTC': 41214,
-            'ETH': 25678,
-            'YOY': 41214,
-            'USDT': 150000,
-            'USDC': 85000,
-            'BNB': 32000,
-            'ADA': 18000,
-            'SOL': 28000,
-            'DOT': 12000,
-            'LINK': 22000,
-            'XRP': 35000,
-            'AVAX': 15000,
-            'ATOM': 8000,
-            'LTC': 12000,
-            'TRX': 45000,
-            'XLM': 10000,
-            'XMR': 5000,
-            'DOGE': 25000,
-          };
-          return volumeMap[symbol.toUpperCase()] || Math.floor(Math.random() * 50000) + 1000;
-        };
 
-        // 고정된 가격 데이터
-        const getMockPrice = (symbol: string) => {
-          const priceMap: { [key: string]: number } = {
-            'BTC': 47500,
-            'ETH': 3350,
-            'YOY': 0.125,
-            'USDT': 1.0,
-            'USDC': 1.0,
-            'BNB': 325,
-            'ADA': 0.55,
-            'SOL': 110,
-            'DOT': 8.5,
-            'LINK': 17.5,
-            'XRP': 0.65,
-            'AVAX': 35,
-            'ATOM': 12,
-            'LTC': 85,
-            'TRX': 0.08,
-            'XLM': 0.12,
-            'XMR': 180,
-            'DOGE': 0.15,
-          };
-          return priceMap[symbol.toUpperCase()] || 50;
-        };
 
-        const getMockChange = (symbol: string) => {
-          const changeMap: { [key: string]: number } = {
-            'BTC': 2.5,
-            'ETH': -1.2,
-            'YOY': 5.8,
-            'USDT': 0.0,
-            'USDC': 0.0,
-            'BNB': 3.1,
-            'ADA': -0.8,
-            'SOL': 4.2,
-            'DOT': 1.5,
-            'LINK': -2.1,
-            'XRP': 1.8,
-            'AVAX': -0.5,
-            'ATOM': 2.3,
-            'LTC': -1.1,
-            'TRX': 0.9,
-            'XLM': -0.3,
-            'XMR': 1.2,
-            'DOGE': 3.5,
-          };
-          return changeMap[symbol.toUpperCase()] || 0;
-        };
-
-                    return {
-              id: adminCoin.id,
-              symbol: adminCoin.symbol,
-              name: adminCoin.name,
-              balance: getMockVolume(adminCoin.symbol), // 실제 거래량으로 변경
-              price: getMockPrice(adminCoin.symbol),
-              change24h: getMockChange(adminCoin.symbol),
-              volume: getMockVolume(adminCoin.symbol),
-              icon: adminCoin.logoUrl || getCoinIcon(adminCoin.symbol), // 로고 URL 우선 사용
-            };
-      }), [adminCoins]
-  );
-
-  // 기본 코인들 (관리자가 추가한 코인이 없을 때)
-  const defaultCoins: Coin[] = [
-    {
-      id: 'yoy',
-      symbol: 'YOY',
-      name: 'YooY Land',
-      balance: 41214,
-      price: 0.125,
-      change24h: 5.8,
-      volume: 12000000,
-      icon: '/assets/yoy.png',
-    },
-    {
-      id: 'btc',
-      symbol: 'BTC',
-      name: 'Bitcoin',
-      balance: 41214,
-      price: 47500,
-      change24h: 2.5,
-      volume: 1410000000,
-      icon: '/assets/btc.png',
-    },
-    {
-      id: 'eth',
-      symbol: 'ETH',
-      name: 'Ethereum',
-      balance: 25678,
-      price: 3350,
-      change24h: -1.2,
-      volume: 890000000,
-      icon: '/assets/eth.png',
-    },
-  ];
-
-  // 관리자 등록 코인이 있으면 사용, 없으면 기본 코인 사용
-  const coins = availableCoins.length > 0 ? availableCoins : defaultCoins;
-
-  // 디버깅: 로고 URL 확인
-  console.log('관리자 코인 데이터:', adminCoins);
-  console.log('사용 가능한 코인:', availableCoins);
-  console.log('최종 사용 코인:', coins);
-
-  const mockTransactions: Transaction[] = [
-    {
-      id: '1',
-      type: 'receive',
-      coin: 'BTC',
-      amount: 0.1,
-      fee: 0.001,
-      status: 'completed',
-      from: '0x1234...5678',
-      to: '내 지갑',
-      timestamp: new Date(Date.now() - 3600000),
-    },
-    {
-      id: '2',
-      type: 'send',
-      coin: 'ETH',
-      amount: 1.5,
-      fee: 0.005,
-      status: 'completed',
-      from: '내 지갑',
-      to: '0x8765...4321',
-      timestamp: new Date(Date.now() - 7200000),
-    },
-  ];
-
+  // 총 잔액 계산
   useEffect(() => {
-    // 총 잔액 계산 (코인 변경 시 갱신)
-    const total = coins.reduce((sum, coin) => sum + coin.balance * coin.price, 0);
+    const total = availableCoins.reduce((sum, coin) => sum + coin.balance * coin.price, 0);
     setTotalBalance(total);
-  }, [coins]);
+  }, [availableCoins]);
 
+  // 최근 거래 내역 (모의 데이터)
   useEffect(() => {
+    const mockTransactions: Transaction[] = [
+      {
+        id: '1',
+        type: 'receive',
+        coin: 'BTC',
+        amount: 0.1,
+        address: '0x1234...5678',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        status: 'completed',
+      },
+      {
+        id: '2',
+        type: 'send',
+        coin: 'ETH',
+        amount: 1.5,
+        address: '0x8765...4321',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        status: 'completed',
+      },
+    ];
     setRecentTransactions(mockTransactions);
-  }, [mockTransactions]);
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ko-KR', {
@@ -228,8 +271,8 @@ const Dashboard: React.FC = () => {
     const isPositive = change >= 0;
     return (
       <span className={`change ${isPositive ? 'positive' : 'negative'}`}>
-        {isPositive ? <FaArrowUp /> : <FaArrowDown />}
-        {Math.abs(change)}%
+        {isPositive ? <FaSortUp /> : <FaSortDown />}
+        {Math.abs(change).toFixed(2)}%
       </span>
     );
   };
@@ -244,33 +287,33 @@ const Dashboard: React.FC = () => {
   };
 
   // 정렬 함수
-  const handleSort = (field: 'price' | 'change24h' | 'volume') => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  const handleSort = (field: 'price' | 'change' | 'volume') => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field);
-      setSortDirection('desc');
+      setSortBy(field);
+      setSortOrder('desc');
     }
   };
 
   // 필터링된 코인 목록
-  const filteredCoins = coins
+  const filteredCoins = availableCoins
     .filter(coin => {
-      if (searchQuery) {
-        return coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-               coin.symbol.toLowerCase().includes(searchQuery.toLowerCase());
+      if (searchTerm) {
+        return coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               coin.symbol.toLowerCase().includes(searchTerm.toLowerCase());
       }
       return true;
     })
     .sort((a, b) => {
       let aValue: number, bValue: number;
       
-      switch (sortField) {
+      switch (sortBy) {
         case 'price':
           aValue = a.price;
           bValue = b.price;
           break;
-        case 'change24h':
+        case 'change':
           aValue = a.change24h;
           bValue = b.change24h;
           break;
@@ -282,7 +325,7 @@ const Dashboard: React.FC = () => {
           return 0;
       }
       
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
     });
 
   // 즐겨찾기 토글
@@ -297,11 +340,11 @@ const Dashboard: React.FC = () => {
   // 마켓별 필터링
   const getMarketCoins = (market: string) => {
     if (market === 'MY') {
-      return coins.filter(coin => coin.balance > 0);
+      return availableCoins.filter(coin => coin.balance > 0);
     } else if (market === 'FAV') {
-      return coins.filter(coin => favorites.includes(coin.id));
+      return availableCoins.filter(coin => favorites.includes(coin.symbol));
     } else {
-      return coins; // 실제로는 마켓별 필터링 로직 필요
+      return availableCoins; // 실제로는 마켓별 필터링 로직 필요
     }
   };
 
@@ -321,7 +364,8 @@ const Dashboard: React.FC = () => {
             <p className="balance-change">+2.5% (24시간)</p>
           </div>
           <div className="balance-icon">
-            <FaChartLine />
+            {/* FaChartLine 대신 다른 아이콘 사용 */}
+            <FaSort />
           </div>
         </div>
       </div>
@@ -330,13 +374,18 @@ const Dashboard: React.FC = () => {
       <div className="coins-section">
         <div className="section-title-row">
           <h2>보유 자산</h2>
-          <button className="add-coin-btn" onClick={() => navigate('/admin')}>
-            <FaPlus />
-            <span>관리자 페이지</span>
-          </button>
+          {/* 관리자 버튼 - 관리자 권한이 있는 경우에만 표시 */}
+          {user?.isAdmin && (
+            <div className="admin-section">
+              <button className="add-coin-btn" onClick={() => navigate('/admin')}>
+                <FaPlus />
+                <span>관리자 페이지</span>
+              </button>
+            </div>
+          )}
         </div>
         <div className="coins-grid">
-          {coins.map((coin) => (
+          {availableCoins.map((coin) => (
             <div key={coin.id} className="coin-card">
                                <div className="coin-header">
                 <div className="coin-icon">
@@ -379,9 +428,9 @@ const Dashboard: React.FC = () => {
             <div key={transaction.id} className="transaction-item">
               <div className="transaction-icon">
                 {transaction.type === 'receive' ? (
-                  <FaArrowUp className="receive" />
+                  <FaSortUp className="receive" />
                 ) : (
-                  <FaArrowDown className="send" />
+                  <FaSortDown className="send" />
                 )}
               </div>
               <div className="transaction-details">
@@ -396,7 +445,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="transaction-address">
                   {transaction.type === 'receive' ? 'From: ' : 'To: '}
-                  {transaction.type === 'receive' ? transaction.from : transaction.to}
+                  {transaction.address}
                 </div>
               </div>
               <div className="transaction-status">
@@ -405,7 +454,7 @@ const Dashboard: React.FC = () => {
                    transaction.status === 'pending' ? '처리중' : '실패'}
                 </span>
                 <span className="transaction-time">
-                  {transaction.timestamp.toLocaleString('ko-KR')}
+                  {new Date(transaction.timestamp).toLocaleString('ko-KR')}
                 </span>
               </div>
             </div>
@@ -418,15 +467,18 @@ const Dashboard: React.FC = () => {
         <h2>빠른 액션</h2>
         <div className="actions-grid">
           <button className="action-btn">
-            <FaBitcoin />
+            {/* FaBitcoin 대신 다른 아이콘 사용 */}
+            <FaPlus />
             <span>코인 구매</span>
           </button>
           <button className="action-btn">
-            <FaEthereum />
+            {/* FaEthereum 대신 다른 아이콘 사용 */}
+            <FaSort />
             <span>코인 전송</span>
           </button>
           <button className="action-btn">
-            <FaChartLine />
+            {/* FaChartLine 대신 다른 아이콘 사용 */}
+            <FaSort />
             <span>거래 내역</span>
           </button>
         </div>
@@ -439,8 +491,8 @@ const Dashboard: React.FC = () => {
             <input
               type="text"
               placeholder="검색: BTC, YOY ...."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className="search-btn">
               <FaSearch />
@@ -450,8 +502,8 @@ const Dashboard: React.FC = () => {
             {['KRW', 'ETH', 'BTC', 'BSC', 'USDT', 'MY', 'FAV'].map((market) => (
               <button
                 key={market}
-                className={`market-tab ${selectedMarket === market ? 'active' : ''}`}
-                onClick={() => setSelectedMarket(market)}
+                className={`market-tab ${activeMarket === market ? 'active' : ''}`}
+                onClick={() => setActiveMarket(market as 'KRW' | 'ETH' | 'BTC' | 'BSC' | 'USDT' | 'MY' | 'FAV')}
               >
                 {market}
               </button>
@@ -466,25 +518,25 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="th price-col" onClick={() => handleSort('price')}>
               <span>현재가</span>
-              {sortField === 'price' && (
+              {sortBy === 'price' && (
                 <span className="sort-indicator">
-                  {sortDirection === 'asc' ? '↑' : '↓'}
+                  {sortOrder === 'asc' ? '↑' : '↓'}
                 </span>
               )}
             </div>
-            <div className="th change-col" onClick={() => handleSort('change24h')}>
+            <div className="th change-col" onClick={() => handleSort('change')}>
               <span>전일대비</span>
-              {sortField === 'change24h' && (
+              {sortBy === 'change' && (
                 <span className="sort-indicator">
-                  {sortDirection === 'asc' ? '↑' : '↓'}
+                  {sortOrder === 'asc' ? '↑' : '↓'}
                 </span>
               )}
             </div>
             <div className="th volume-col" onClick={() => handleSort('volume')}>
               <span>거래금액</span>
-              {sortField === 'volume' && (
+              {sortBy === 'volume' && (
                 <span className="sort-indicator">
-                  {sortDirection === 'asc' ? '↑' : '↓'}
+                  {sortOrder === 'asc' ? '↑' : '↓'}
                 </span>
               )}
             </div>
@@ -496,10 +548,10 @@ const Dashboard: React.FC = () => {
                 <div className="td market-col">
                   <div className="coin-info">
                     <button 
-                      className={`favorite-btn ${favorites.includes(coin.id) ? 'active' : ''}`}
-                      onClick={() => toggleFavorite(coin.id)}
+                      className={`favorite-btn ${favorites.includes(coin.symbol) ? 'active' : ''}`}
+                      onClick={() => toggleFavorite(coin.symbol)}
                     >
-                      <FaStar />
+                      {favorites.includes(coin.symbol) ? <FaStarSolid /> : <FaStar />}
                     </button>
                                          <div className="coin-icon">
                        {typeof coin.icon === 'string' && coin.icon.startsWith('/assets/') ? (
@@ -510,7 +562,7 @@ const Dashboard: React.FC = () => {
                      </div>
                     <div className="coin-details">
                       <span className="coin-name">{coin.name}</span>
-                      <span className="coin-symbol">{coin.symbol} . {coin.symbol}/{selectedMarket}</span>
+                      <span className="coin-symbol">{coin.symbol} . {coin.symbol}/{activeMarket}</span>
                     </div>
                   </div>
                 </div>
@@ -520,9 +572,9 @@ const Dashboard: React.FC = () => {
                 <div className="td change-col">
                   <div className={`change-value ${coin.change24h >= 0 ? 'positive' : 'negative'}`}>
                     {coin.change24h >= 0 ? (
-                      <FaArrowUp className="change-icon" />
+                      <FaSortUp className="change-icon" />
                     ) : (
-                      <FaArrowDown className="change-icon" />
+                      <FaSortDown className="change-icon" />
                     )}
                     {Math.abs(coin.change24h).toFixed(2)}
                   </div>
