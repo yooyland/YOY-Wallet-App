@@ -2,7 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const { applySecurityMiddleware } = require('./middleware/security');
 const logger = require('./utils/logger');
-const database = require('./database/config/database');
+let database;
+try {
+  database = require('./database/config/database');
+} catch (e) {
+  // DB 설정이 없는 경우도 서버 기동 가능하도록 옵셔널 처리
+  console.warn('Database config not found. Skipping DB connection.');
+  database = { authenticate: async () => {}, sync: async () => {}, close: async () => {} };
+}
 
 // 환경 변수 로드
 dotenv.config();
@@ -110,7 +117,7 @@ const startServer = async () => {
     logger.info('Database connection established successfully.');
     
     // 데이터베이스 동기화 (개발 환경에서만)
-    if (process.env.NODE_ENV === 'development') {
+    if (database && process.env.NODE_ENV === 'development' && database.sync) {
       await database.sync({ alter: true });
       logger.info('Database synchronized successfully.');
     }
